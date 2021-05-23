@@ -60,13 +60,13 @@
               // //   path: '/list',
               // //   component: './TableList',
               // // },
-              {
-                name: '畅玩消费',
-                icon: 'table',
-                path: '/consume',
-                // authority: 'consume',
-                component: './Consume',
-              },
+              // {
+              //   name: '畅玩消费',
+              //   icon: 'table',
+              //   path: '/consume',
+              //   // authority: 'consume',
+              //   component: './Consume',
+              // },
               {
                 name: '会员列表',
                 icon: 'table',

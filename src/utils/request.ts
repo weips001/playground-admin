@@ -1,7 +1,7 @@
 /** Request 网络请求工具 更详细的 api 文档: https://github.com/umijs/umi-request */
 import type { RequestOptionsInit } from 'umi-request';
 import { extend } from 'umi-request';
-import { notification } from 'antd';
+import { notification, message } from 'antd';
 import { getUserCompId } from './utils';
 import { history } from 'umi'
 
@@ -80,6 +80,7 @@ request.interceptors.response.use(async (response, options) => {
   if (code === 0) {
     return response;
   }
+  message.error(res.msg)
   return Promise.reject(res);
 });
 

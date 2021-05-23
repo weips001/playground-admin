@@ -1,18 +1,23 @@
 import { PlusOutlined } from '@ant-design/icons';
-import { Button, message, Input, Modal, Drawer, Tag, FormInstance } from 'antd';
+import { Button, message, Upload, Modal, Drawer, Tag, FormInstance } from 'antd';
 import React, { useState, useRef } from 'react';
 import { useIntl } from 'umi';
 import { PageContainer, FooterToolbar } from '@ant-design/pro-layout';
 import type { ProColumns, ActionType } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
-import ProForm, { ModalForm, ProFormText, ProFormDigit, ProFormDateTimePicker } from '@ant-design/pro-form';
+import ProForm, { ModalForm, ProFormText, ProFormDatePicker, ProFormSelect, ProFormTextArea } from '@ant-design/pro-form';
 import type { ProDescriptionsItemProps } from '@ant-design/pro-descriptions';
 import ProDescriptions from '@ant-design/pro-descriptions';
 import type { FormValueType } from './components/UpdateForm';
 import type { TableListItem } from './data.d';
 import { getTableList, update, add, remove } from './service';
-import { ExclamationCircleOutlined } from '@ant-design/icons';
-const {confirm} = Modal
+import { ExclamationCircleOutlined, UploadOutlined } from '@ant-design/icons';
+import {sexType, cardTypeEnum} from '@/utils/constant'
+import Recharge from './components/Recharge'
+import Consume from './components/Consume'
+import moment from '_moment@2.29.1@moment';
+
+const { confirm } = Modal
 /**
  * 添加节点
  * @param fields
@@ -22,6 +27,7 @@ const handleAdd = async (fields: TableListItem) => {
   const hide = message.loading('正在添加');
 
   try {
+    console.log(fields)
     await add({ ...fields });
     hide();
     message.success('添加成功');
@@ -78,15 +84,18 @@ const TableList: React.FC = () => {
   /** 分布更新窗口的弹窗 */
 
   const [showDetail, setShowDetail] = useState<boolean>(false);
+  const [searchPhone, setSearchPhone] = useState<string>('')
+  const [rechargeVisible, setRechargeVisible] = useState<boolean>(false);
+  const [consumeVisible, setConsumeVisible] = useState<boolean>(false);
   const actionRef = useRef<ActionType>();
   const modalRef = useRef<FormInstance>()
+  const searchFormRef = useRef<FormInstance>()
   const [currentRow, setCurrentRow] = useState<TableListItem>();
   const [selectedRowsState, setSelectedRows] = useState<string[]>([]);
-  
-  const handleRemove = async (selectedRows: string[]) => {
-    if (!selectedRows) return true;
+
+  const handleRemove = async (id) => {
     try {
-      await remove(selectedRows);
+      await remove(id);
       actionRef.current?.reloadAndRest?.();
       message.success('删除成功，即将刷新');
       return true
@@ -101,7 +110,7 @@ const TableList: React.FC = () => {
    *
    * @param selectedRows
    */
-  const confirmDel = (selectedRows:string[]) => {
+  const confirmDel = (id: string) => {
     confirm({
       title: '是否确认删除',
       icon: <ExclamationCircleOutlined />,
@@ -110,17 +119,16 @@ const TableList: React.FC = () => {
       okType: 'danger',
       cancelText: '取消',
       onOk() {
-        return handleRemove(selectedRows)
+        return handleRemove(id)
       },
-      onCancel() {},
+      onCancel() { },
     })
   }
 
   const columns: ProColumns<TableListItem>[] = [
     {
-      title: '发票号码',
-      dataIndex: 'billNumber',
-      tip: '发票号码是唯一的',
+      title: '手机号',
+      dataIndex: 'phone',
       render: (dom, entity) => {
         return (
           <a
@@ -135,43 +143,69 @@ const TableList: React.FC = () => {
       },
     },
     {
-      title: '发票代码',
+      title: '卡号',
+      dataIndex: 'cardId',
+    },
+    {
+      title: '姓名',
+      dataIndex: 'name',
+    },
+    {
+      title: '生日',
       hideInSearch: true,
-      dataIndex: 'billCode',
+      dataIndex: 'birthday',
+      valueType: 'date'
     },
     {
-      title: '发票金额',
+      title: '性别',
       hideInSearch: true,
-      dataIndex: 'money',
+      dataIndex: 'sex',
+      valueEnum: {
+        0: '男',
+        1: '女'
+      }
     },
     {
-      title: '报销人',
-      dataIndex: 'applyUser'
+      title: '卡种',
+      dataIndex: 'cardType',
+      valueEnum: cardTypeEnum
     },
     {
-      title: '凭证号',
-      dataIndex: 'voucherNumber'
+      title: '剩余次数',
+      hideInSearch: true,
+      dataIndex: 'totalRest'
     },
     {
-      title: '开票时间',
-      dataIndex: 'billDate',
+      title: '有效期',
+      dataIndex: 'overdate',
       hideInForm: true,
       sorter: true,
       hideInSearch: true,
-      valueType: 'dateTime',
-    },
-    {
-      title: '录入时间',
-      dataIndex: 'createTime',
-      hideInForm: true,
-      sorter: true,
-      valueType: 'dateTime',
+      valueType: 'date',
     },
     {
       title: '操作',
       dataIndex: 'option',
       valueType: 'option',
       render: (_, record) => [
+        <a
+          key="recharge"
+          onClick={() => {
+            setRechargeVisible(true)
+            setCurrentRow(record);
+          }}
+        >
+          充值
+        </a>,
+        <a
+          key="consume"
+          onClick={() => {
+            setConsumeVisible(true)
+            setCurrentRow(record);
+          }}
+        >
+          消费
+        </a>,
         <a
           key="config"
           onClick={() => {
@@ -183,17 +217,59 @@ const TableList: React.FC = () => {
           编辑
         </a>,
         <a key="subscribeAlert" onClick={async () => {
-          await confirmDel([record.id])
-          
+          await confirmDel(record.id)
+
         }}>
           删除
         </a>,
       ],
     },
   ];
-
+  const cancelRechargeModal = () => {
+    setRechargeVisible(false)
+  }
+  const cancelConsumeModal = () => {
+    setConsumeVisible(false)
+  }
   const onVisibleChange = (visible: boolean) => {
+    const phone = searchFormRef.current?.getFieldValue('phone') || ''
+    if (visible && phone.length === 11 && !currentRow) {
+      modalRef.current?.setFieldsValue({phone})
+    }
     handleModalVisible(visible);
+  };
+  const okConsumeModal = () => {
+    cancelConsumeModal()
+    actionRef.current?.reload()
+  }
+  const props = {
+    name: 'file',
+    showUploadList: false,
+    action: '/api/vipUpload',
+    onChange(info) {
+      const {response, name, status} = info.file
+      if (status !== 'uploading') {
+        console.log(info.file, info.fileList);
+      }
+      if (status === 'done') {
+        if(response.code === 0) {
+          message.success(`${name} 上传成功。`);
+          if (actionRef.current) {
+            actionRef.current.reload();
+          }
+        } else {
+          const list = response.data.errInfo.map(item => (
+            <p>第{item.index+2}行数据上传失败，失败原因：{item.msg}</p>
+          ))
+          Modal.error({
+            title: '上传失败！',
+            content: list,
+          });
+        }
+      } else if (info.file.status === 'error') {
+        message.error(`${name} 上传失败。`);
+      }
+    },
   };
   return (
     <PageContainer>
@@ -201,11 +277,16 @@ const TableList: React.FC = () => {
         headerTitle="查询表格"
         bordered={true}
         actionRef={actionRef}
+        formRef={searchFormRef}
         rowKey="id"
         search={{
           labelWidth: 120,
         }}
+        
         toolBarRender={() => [
+          <Upload {...props}>
+            <Button icon={<UploadOutlined />}>上传</Button>
+          </Upload>,
           <Button
             type="primary"
             key="primary"
@@ -244,20 +325,20 @@ const TableList: React.FC = () => {
             </div>
           }
         >
-          <Button
+          {/* <Button
             onClick={async () => {
               await confirmDel(selectedRowsState);
               setSelectedRows([]);
             }}
           >
             批量删除
-          </Button>
+          </Button> */}
           <Button type="primary">批量审批</Button>
         </FooterToolbar>
       )}
       <ModalForm
         formRef={modalRef}
-        title={currentRow ? "编辑发票": "新建发票"}
+        title={currentRow ? "编辑会员" : "新建会员"}
         width="800px"
         modalProps={{
           afterClose() {
@@ -269,20 +350,19 @@ const TableList: React.FC = () => {
         onVisibleChange={onVisibleChange}
         onFinish={async (value) => {
           let success
-          if(currentRow?.id) {
+          if (currentRow?.id) {
             const params = {
               ...currentRow,
               ...value
             }
             success = await handleUpdate(params);
           } else {
-             success = await handleAdd(value as TableListItem);
+            success = await handleAdd(value as TableListItem);
 
           }
 
           if (success) {
             handleModalVisible(false);
-
             if (actionRef.current) {
               actionRef.current.reload();
             }
@@ -291,63 +371,65 @@ const TableList: React.FC = () => {
       >
         <ProForm.Group>
           <ProFormText
+            width="md"
+            name="name"
             rules={[
               {
                 required: true,
-                message: '发票号码为必填项',
-              },
+                message: '请输入娃子的姓名!',
+              }
             ]}
-            label="发票号码"
-            width="sm"
-            name="billNumber"
+            label="姓名"
+            placeholder="请输入娃子的姓名"
           />
-          <ProFormText
-            label="发票代码"
-            width="sm"
+
+          <ProFormText width="md" name="phone" label="手机号"
             rules={[
               {
                 required: true,
-                message: '发票代码为必填项',
+                message: '请输入手机号!',
+              },
+              {
+                pattern: /^1\d{10}$/,
+                message: '不合法的手机号格式!',
               },
             ]}
-            name="billCode"
-          />
-          <ProFormDigit
-            label="发票金额"
-            width="sm"
+            placeholder="请输入家长的手机号" />
+        </ProForm.Group>
+        <ProForm.Group>
+          <ProFormDatePicker width="md"
             rules={[
               {
                 required: true,
-                message: '发票金额为必填项',
+                message: '请选择娃子的生日!',
               },
             ]}
-            name="money"
-            min={0}
-            fieldProps={{ precision: 2 }}
+            name="birthday" label="生日" placeholder="请选择娃子的生日" />
+          <ProFormSelect
+            width="md"
+            rules={[
+              {
+                required: true,
+                message: '请选择娃子的性别!',
+              },
+            ]}
+            options={sexType}
+            name="sex"
+            label="性别"
           />
         </ProForm.Group>
         <ProForm.Group>
-          
-          <ProFormDateTimePicker width="sm" name="billDate" label="发票日期" />
-          <ProFormText
-            label="校验码"
-            width="sm"
-            name="checkCode"
-          />
+          <ProFormText width="md" name="cardId" label="卡号" placeholder="请输入卡号" />
         </ProForm.Group>
         <ProForm.Group>
-          <ProFormText
-            label="报销人"
-            width="sm"
-            name="applyUser"
-          />
-          <ProFormText
-            label="凭证号"
-            width="sm"
-            name="voucherNumber"
+          <ProFormTextArea
+            name="remark"
+            label="备注"
+            width="xl"
+            placeholder="请输入备注"
           />
         </ProForm.Group>
-        
+
       </ModalForm>
       <Drawer
         width={600}
@@ -372,6 +454,17 @@ const TableList: React.FC = () => {
           />
         )}
       </Drawer>
+      <Recharge
+        modalType="create"
+        currentRow={currentRow}
+        onCancel={cancelRechargeModal}
+        visible={rechargeVisible} />
+      <Consume
+        modalType="create"
+        currentRow={currentRow}
+        onCancel={cancelConsumeModal}
+        onOk={okConsumeModal}
+        visible={consumeVisible} />
     </PageContainer>
   );
 };

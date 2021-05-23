@@ -2,29 +2,26 @@ import request from '@/utils/request';
 import type { TableListParams, TableListItem } from './data.d';
 
 export async function getTableList(params?: TableListParams) {
-  return request('/api/bill', {
+  return request('/api/vip', {
     params,
   });
 }
 
-export async function remove(deleteArr: string[]) {
-  return request('/api/bill', {
+export async function remove(id: string) {
+  return request(`/api/vip/${id}`, {
     method: 'delete',
-    data: {
-      deleteArr
-    },
   });
 }
 
 export async function add(data: TableListItem) {
-  return request('/api/bill', {
+  return request('/api/vip', {
     method: 'POST',
     data,
   });
 }
 
 export async function update(data: TableListParams) {
-  return request(`/api/bill/${data.id}`, {
+  return request(`/api/vip/${data.id}`, {
     method: 'PUT',
     data,
   });
