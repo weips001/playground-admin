@@ -105,8 +105,8 @@ const UserMoadl: React.FC<UserMoadlProps> = (props) => {
               const {label, value, month, money} = e.target
               const overdate= moment(new Date()).add(month, 'month').format('YYYY-MM-DD')
               formRef.current?.setFieldsValue({
-                nowMoney: money,
-                nowTotal: value,
+                money,
+                total: value,
                 overdate
               })
               console.log('e', e)
@@ -117,8 +117,8 @@ const UserMoadl: React.FC<UserMoadlProps> = (props) => {
         </ProFormRadio.Group>
       </ProForm.Group>
       <ProForm.Group>
-        <ProFormText width="md" name="nowMoney" readonly label="金额" />
-        <ProFormText width="md" name="nowTotal" label="次数" readonly />
+        <ProFormText width="md" name="money" readonly label="金额" />
+        <ProFormText width="md" name="total" label="次数" readonly />
       </ProForm.Group>
       <ProForm.Group>
         <ProFormDatePicker width="md"
