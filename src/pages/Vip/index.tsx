@@ -242,6 +242,10 @@ const TableList: React.FC = () => {
     cancelConsumeModal()
     actionRef.current?.reload()
   }
+  const okRechargeModal = () => {
+    cancelRechargeModal()
+    actionRef.current?.reload()
+  }
   const props = {
     name: 'file',
     showUploadList: false,
@@ -457,6 +461,7 @@ const TableList: React.FC = () => {
       <Recharge
         modalType="create"
         currentRow={currentRow}
+        onOk={okRechargeModal}
         onCancel={cancelRechargeModal}
         visible={rechargeVisible} />
       <Consume

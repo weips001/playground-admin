@@ -29,13 +29,14 @@ type UserMoadlProps = {
   currentRow: {string: any}
   phone: string
   onCancel: () => void
+  onOk: () => void
 }
 const titleMap = {
   create: '创建会员',
   update: '更新会员',
 }
 const UserMoadl: React.FC<UserMoadlProps> = (props) => {
-  const { visible, currentRow, onCancel, phone } = props
+  const { visible, currentRow, onCancel, onOk } = props
   const formRef = useRef<FormInstance>()
 
   const onVisibleChange = (visible: boolean) => {
@@ -75,6 +76,7 @@ const UserMoadl: React.FC<UserMoadlProps> = (props) => {
         id: currentRow.id
       }
       await update(params)
+      onOk()
       message.success('提交成功');
       return true;
     }}
