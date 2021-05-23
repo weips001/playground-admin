@@ -12,7 +12,7 @@ import type { FormValueType } from './components/UpdateForm';
 import type { TableListItem } from './data.d';
 import { getTableList, update, add, remove } from './service';
 import { ExclamationCircleOutlined, UploadOutlined } from '@ant-design/icons';
-import {sexType, rechargeType, cardTypeEnum} from '@/utils/constant'
+import { sexType, rechargeType, cardTypeEnum } from '@/utils/constant'
 import Recharge from './components/Recharge'
 import Consume from './components/Consume'
 import moment from '_moment@2.29.1@moment';
@@ -24,16 +24,11 @@ const { confirm } = Modal
  */
 
 const handleAdd = async (fields: TableListItem) => {
-  const hide = message.loading('正在添加');
-
   try {
-    console.log(fields)
-    await add({ ...fields });
-    hide();
+    await add(fields);
     message.success('添加成功');
     return true;
   } catch (error) {
-    hide();
     console.log(error)
     message.error(`添加失败，失败原因：${error.msg}！`);
     return false;
@@ -171,9 +166,24 @@ const TableList: React.FC = () => {
       valueEnum: cardTypeEnum
     },
     {
+      title: '金额',
+      hideInSearch: true,
+      dataIndex: 'money'
+    },
+    {
+      title: '总次数',
+      hideInSearch: true,
+      dataIndex: 'total'
+    },
+    {
       title: '剩余次数',
       hideInSearch: true,
-      dataIndex: 'totalRest'
+      dataIndex: 'restTotal'
+    },
+    {
+      title: '已用次数',
+      hideInSearch: true,
+      dataIndex: 'usedTotal'
     },
     {
       title: '有效期',
@@ -234,7 +244,7 @@ const TableList: React.FC = () => {
   const onVisibleChange = (visible: boolean) => {
     const phone = searchFormRef.current?.getFieldValue('phone') || ''
     if (visible && phone.length === 11 && !currentRow) {
-      modalRef.current?.setFieldsValue({phone})
+      modalRef.current?.setFieldsValue({ phone })
     }
     handleModalVisible(visible);
   };
@@ -251,19 +261,48 @@ const TableList: React.FC = () => {
     showUploadList: false,
     action: '/api/vipUpload',
     onChange(info) {
-      const {response, name, status} = info.file
+      const { response, name, status } = info.file
       if (status !== 'uploading') {
         console.log(info.file, info.fileList);
       }
       if (status === 'done') {
-        if(response.code === 0) {
+        if (response.code === 0) {
           message.success(`${name} 上传成功。`);
           if (actionRef.current) {
             actionRef.current.reload();
           }
         } else {
           const list = response.data.errInfo.map(item => (
-            <p>第{item.index+2}行数据上传失败，失败原因：{item.msg}</p>
+            <p>第{item.index + 2}行数据上传失败，失败原因：{item.msg}</p>
+          ))
+          Modal.error({
+            title: '上传失败！',
+            content: list,
+          });
+        }
+      } else if (info.file.status === 'error') {
+        message.error(`${name} 上传失败。`);
+      }
+    },
+  };
+  const Userprops = {
+    name: 'file',
+    showUploadList: false,
+    action: '/api/vipUserUpload',
+    onChange(info) {
+      const { response, name, status } = info.file
+      if (status !== 'uploading') {
+        console.log(info.file, info.fileList);
+      }
+      if (status === 'done') {
+        if (response.code === 0) {
+          message.success(`${name} 上传成功。`);
+          if (actionRef.current) {
+            actionRef.current.reload();
+          }
+        } else {
+          const list = response.data.errInfo.map(item => (
+            <p>第{item.index + 2}行数据上传失败，失败原因：{item.msg}</p>
           ))
           Modal.error({
             title: '上传失败！',
@@ -286,15 +325,19 @@ const TableList: React.FC = () => {
         search={{
           labelWidth: 120,
         }}
-        
+
         toolBarRender={() => [
           <Upload {...props}>
-            <Button icon={<UploadOutlined />}>上传</Button>
+            <Button icon={<UploadOutlined />}>上传充值记录</Button>
+          </Upload>,
+          <Upload {...Userprops}>
+            <Button icon={<UploadOutlined />}>上传会员</Button>
           </Upload>,
           <Button
             type="primary"
             key="primary"
             onClick={() => {
+              setCurrentRow(undefined)
               handleModalVisible(true);
             }}
           >
@@ -350,11 +393,14 @@ const TableList: React.FC = () => {
             modalRef.current?.resetFields()
           }
         }}
+        initialValues={{
+          cardId: moment().format('YYYYMMDDhhmmss')
+        }}
         visible={createModalVisible}
         onVisibleChange={onVisibleChange}
         onFinish={async (value) => {
           let success
-          value.cardType = value.cardType < 0 ? '1': '0'
+          value.cardType = value.cardType < 0 ? '1' : '0'
           if (currentRow?.id) {
             const params = {
               ...currentRow,
@@ -362,7 +408,11 @@ const TableList: React.FC = () => {
             }
             success = await handleUpdate(params);
           } else {
-            success = await handleAdd(value as TableListItem);
+            const params = {
+              ...value,
+              restTotal: value.total
+            }
+            success = await handleAdd(params as TableListItem);
 
           }
 
@@ -409,6 +459,7 @@ const TableList: React.FC = () => {
                 message: '请选择娃子的生日!',
               },
             ]}
+            disabled={!!currentRow}
             name="birthday" label="生日" placeholder="请选择娃子的生日" />
           <ProFormSelect
             width="md"
@@ -424,7 +475,7 @@ const TableList: React.FC = () => {
           />
         </ProForm.Group>
         <ProForm.Group>
-          <ProFormText width="md" name="cardId" label="卡号" placeholder="请输入卡号" />
+          <ProFormText disabled={!!currentRow} width="md" name="cardId" label="卡号" placeholder="请输入卡号" />
         </ProForm.Group>
         <ProForm.Group>
           <ProFormTextArea
@@ -434,47 +485,53 @@ const TableList: React.FC = () => {
             placeholder="请输入备注"
           />
         </ProForm.Group>
-        <ProForm.Group>
-        <ProFormRadio.Group
-          name="cardType"
-          radioType="button"
-          label="套卡类型"
-          rules={[
-            {
-              required: true,
-              message: '请选择套卡类型!',
-            },
-          ]}
-          fieldProps={{
-            onChange(e) {
-              const {label, value, month, money} = e.target
-              const overdate= moment(new Date()).add(month, 'month').format('YYYY-MM-DD')
-              modalRef.current?.setFieldsValue({
-                money,
-                total: value,
-                overdate
-              })
-              console.log('e', e)
-            }
-          }}
-          options={rechargeType}
-        >
-        </ProFormRadio.Group>
-      </ProForm.Group>
-      <ProForm.Group>
-        <ProFormText width="md" name="money" readonly label="金额" />
-        <ProFormText width="md" name="total" label="次数" readonly />
-      </ProForm.Group>
-      <ProForm.Group>
-        <ProFormDatePicker width="md"
-          rules={[
-            {
-              required: true,
-              message: '请选择有效期!',
-            },
-          ]}
-          name="overdate" label="有效期至" placeholder="请选择有效期" />
-      </ProForm.Group>
+        {
+          currentRow ? null : (
+            <>
+              <ProForm.Group>
+                <ProFormRadio.Group
+                  name="cardType"
+                  radioType="button"
+                  label="套卡类型"
+                  rules={[
+                    {
+                      required: true,
+                      message: '请选择套卡类型!',
+                    },
+                  ]}
+                  fieldProps={{
+                    onChange(e) {
+                      const { label, value, month, money } = e.target
+                      const overdate = moment(new Date()).add(month, 'month').format('YYYY-MM-DD')
+                      modalRef.current?.setFieldsValue({
+                        money,
+                        total: value,
+                        overdate
+                      })
+                      console.log('e', e)
+                    }
+                  }}
+                  options={rechargeType}
+                >
+                </ProFormRadio.Group>
+              </ProForm.Group>
+              <ProForm.Group>
+                <ProFormText width="md" name="money" readonly label="金额" />
+                <ProFormText width="md" name="total" label="次数" readonly />
+              </ProForm.Group>
+              <ProForm.Group>
+                <ProFormDatePicker width="md"
+                  rules={[
+                    {
+                      required: true,
+                      message: '请选择有效期!',
+                    },
+                  ]}
+                  name="overdate" label="有效期至" placeholder="请选择有效期" />
+              </ProForm.Group>
+            </>
+          )
+        }
       </ModalForm>
       <Drawer
         width={600}

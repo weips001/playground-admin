@@ -76,6 +76,7 @@ const UserMoadl: React.FC<UserMoadlProps> = (props) => {
         ...values,
         birthday,
         sex,
+        restTotal: values.total,
         cardId: moment().format('YYYYMMDDhhmmss'),
         remark
       }

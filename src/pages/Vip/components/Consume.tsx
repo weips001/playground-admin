@@ -1,4 +1,4 @@
-import React, { useRef } from 'react'
+import React, { useRef,useState } from 'react'
 import { Button, message } from 'antd';
 import ProForm, {
   ModalForm,
@@ -38,15 +38,25 @@ const titleMap = {
 const UserMoadl: React.FC<UserMoadlProps> = (props) => {
   const { visible, currentRow, onCancel, onOk } = props
   const formRef = useRef<FormInstance>()
-
+  const [activeConsume, setActiveConsume] = useState(consumeNum)
   const onVisibleChange = (visible: boolean) => {
     if (visible) {
-      const {name, phone} = currentRow
+      const {name, phone, restTotal} = currentRow
       const values = {
         name,
         phone
       }
       formRef.current?.setFieldsValue(values)
+      console.log('restTotal', restTotal)
+      if (restTotal == -1) {
+        const newConsume = activeConsume.filter(item => item.value === 1 )
+        setActiveConsume(newConsume)
+      } else {
+        const newConsume = activeConsume.filter(item => item.value <= restTotal )
+        setActiveConsume(newConsume)
+      }
+    } else {
+      setActiveConsume(consumeNum)
     }
   }
 
@@ -97,7 +107,7 @@ const UserMoadl: React.FC<UserMoadlProps> = (props) => {
               message: '请选择消费次数!',
             },
           ]}
-          options={consumeNum}
+          options={activeConsume}
         >
         </ProFormRadio.Group>
       </ProForm.Group>
