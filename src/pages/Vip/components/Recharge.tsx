@@ -13,7 +13,7 @@ import { PlusOutlined } from '@ant-design/icons';
 import moment from 'moment'
 import type {FormInstance} from 'antd'
 import {sexType, rechargeType} from '@/utils/constant'
-import {update} from '../service'
+import {add} from '../service'
 const waitTime = (time: number = 100) => {
   return new Promise((resolve) => {
     setTimeout(() => {
@@ -70,14 +70,18 @@ const UserMoadl: React.FC<UserMoadlProps> = (props) => {
       }
     }}
     onFinish={async (values) => {
-      await waitTime(2000);
+      values.cardType = values.cardType < 0 ? '1' : '0'
+      const {birthday, sex, remark} = currentRow
       const params = {
         ...values,
-        id: currentRow.id
+        birthday,
+        sex,
+        cardId: moment().format('YYYYMMDDhhmmss'),
+        remark
       }
-      await update(params)
+      await add(params)
       onOk()
-      message.success('提交成功');
+      message.success('充值成功');
       return true;
     }}
   >
@@ -98,11 +102,11 @@ const UserMoadl: React.FC<UserMoadlProps> = (props) => {
           ]}
           fieldProps={{
             onChange(e) {
-              const {label, total, month, money} = e.target
+              const {label, value, month, money} = e.target
               const overdate= moment(new Date()).add(month, 'month').format('YYYY-MM-DD')
               formRef.current?.setFieldsValue({
                 nowMoney: money,
-                nowTotal: total,
+                nowTotal: value,
                 overdate
               })
               console.log('e', e)

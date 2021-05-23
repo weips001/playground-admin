@@ -5,14 +5,14 @@ import { useIntl } from 'umi';
 import { PageContainer, FooterToolbar } from '@ant-design/pro-layout';
 import type { ProColumns, ActionType } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
-import ProForm, { ModalForm, ProFormText, ProFormDatePicker, ProFormSelect, ProFormTextArea } from '@ant-design/pro-form';
+import ProForm, { ModalForm, ProFormText, ProFormDatePicker, ProFormRadio, ProFormSelect, ProFormTextArea } from '@ant-design/pro-form';
 import type { ProDescriptionsItemProps } from '@ant-design/pro-descriptions';
 import ProDescriptions from '@ant-design/pro-descriptions';
 import type { FormValueType } from './components/UpdateForm';
 import type { TableListItem } from './data.d';
 import { getTableList, update, add, remove } from './service';
 import { ExclamationCircleOutlined, UploadOutlined } from '@ant-design/icons';
-import {sexType, cardTypeEnum} from '@/utils/constant'
+import {sexType, rechargeType, cardTypeEnum} from '@/utils/constant'
 import Recharge from './components/Recharge'
 import Consume from './components/Consume'
 import moment from '_moment@2.29.1@moment';
@@ -354,6 +354,7 @@ const TableList: React.FC = () => {
         onVisibleChange={onVisibleChange}
         onFinish={async (value) => {
           let success
+          value.cardType = value.cardType < 0 ? '1': '0'
           if (currentRow?.id) {
             const params = {
               ...currentRow,
@@ -433,7 +434,47 @@ const TableList: React.FC = () => {
             placeholder="请输入备注"
           />
         </ProForm.Group>
-
+        <ProForm.Group>
+        <ProFormRadio.Group
+          name="cardType"
+          radioType="button"
+          label="套卡类型"
+          rules={[
+            {
+              required: true,
+              message: '请选择套卡类型!',
+            },
+          ]}
+          fieldProps={{
+            onChange(e) {
+              const {label, value, month, money} = e.target
+              const overdate= moment(new Date()).add(month, 'month').format('YYYY-MM-DD')
+              modalRef.current?.setFieldsValue({
+                nowMoney: money,
+                nowTotal: value,
+                overdate
+              })
+              console.log('e', e)
+            }
+          }}
+          options={rechargeType}
+        >
+        </ProFormRadio.Group>
+      </ProForm.Group>
+      <ProForm.Group>
+        <ProFormText width="md" name="nowMoney" readonly label="金额" />
+        <ProFormText width="md" name="nowTotal" label="次数" readonly />
+      </ProForm.Group>
+      <ProForm.Group>
+        <ProFormDatePicker width="md"
+          rules={[
+            {
+              required: true,
+              message: '请选择有效期!',
+            },
+          ]}
+          name="overdate" label="有效期至" placeholder="请选择有效期" />
+      </ProForm.Group>
       </ModalForm>
       <Drawer
         width={600}

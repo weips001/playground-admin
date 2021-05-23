@@ -1,29 +1,29 @@
 export const rechargeType = [
   {
     label: '100元',
-    value: '0',
-    total: 3,
+    value: 3,
+    cardType: '0',
     money: 100,
     month: 12,
   },
   {
     label: '300元',
-    value: '0',
-    total: 10,
+    value: 10,
+    cardType: '0',
     money: 300,
     month: 12
   },
   {
     label: '500元',
-    value: '0',
-    total: 20,
+    value: 20,
+    cardType: '0',
     money: 500,
     month: 24
   },
   {
     label: '年卡',
-    value: '1',
-    total: -1,
+    value: -1,
+    cardType: '1',
     money: 1200,
     month: 12
   }
