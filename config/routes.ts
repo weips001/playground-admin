@@ -82,7 +82,14 @@
                 component: './PayRecord',
               },
               {
-                name: '消费记录',
+                name: '游戏币消费记录',
+                icon: 'table',
+                path: '/game-record',
+                // authority: 'consume',
+                component: './GameRecord',
+              },
+              {
+                name: '淘气包消费记录',
                 icon: 'table',
                 path: '/consume-record',
                 // authority: 'consume',

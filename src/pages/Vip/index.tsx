@@ -146,8 +146,15 @@ const TableList: React.FC = () => {
       dataIndex: 'name',
     },
     {
+      title: '创建日期',
+      hideInSearch: true,
+      dataIndex: 'createTime',
+      valueType: 'dateTime'
+    },
+    {
       title: '生日',
       hideInSearch: true,
+      hideInTable: true,
       dataIndex: 'birthday',
       valueType: 'date'
     },
