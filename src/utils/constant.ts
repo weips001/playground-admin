@@ -44,14 +44,25 @@ export const cardTypeEnum = {
   0: '次卡',
   1: '年卡'
 }
-function generateConsumeOption (total = 3) {
+function generateConsumeOption (total = 3, unit = '次') {
   let res = []
   for (let i =0 ; i < total; i++) {
     res.push({
-      label: `${i + 1}次`,
+      label: `${i + 1} ${unit}`,
       value: i + 1
     })
   }
   return res
 }
 export const consumeNum = generateConsumeOption(5)
+
+export const gameBiType = [
+  {
+    label: '200元',
+    value: 200,
+    total: 270,
+    month: 12,
+  }
+]
+
+export const consumeGameBi = generateConsumeOption(20, '个')

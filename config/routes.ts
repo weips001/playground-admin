@@ -68,25 +68,18 @@
               //   component: './Consume',
               // },
               {
-                name: '会员列表',
+                name: '淘气包会员列表',
                 icon: 'table',
                 path: '/vip',
                 // authority: 'consume',
                 component: './Vip',
               },
               {
-                name: '充值记录',
+                name: '淘气包充值记录',
                 icon: 'table',
                 path: '/pay-record',
                 // authority: 'consume',
                 component: './PayRecord',
-              },
-              {
-                name: '游戏币消费记录',
-                icon: 'table',
-                path: '/game-record',
-                // authority: 'consume',
-                component: './GameRecord',
               },
               {
                 name: '淘气包消费记录',
@@ -94,6 +87,20 @@
                 path: '/consume-record',
                 // authority: 'consume',
                 component: './ConsumeRecord',
+              },
+              {
+                name: '游戏币会员记录',
+                icon: 'table',
+                path: '/game-record',
+                // authority: 'consume',
+                component: './GameVip',
+              },
+              {
+                name: '游戏币充值记录',
+                icon: 'table',
+                path: '/gamebi-pay',
+                // authority: 'consume',
+                component: './GameVipRecord',
               },
               // {
               //   name: '付款申请单',
