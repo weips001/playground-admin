@@ -5,7 +5,7 @@ import { useIntl } from 'umi';
 import { PageContainer, FooterToolbar } from '@ant-design/pro-layout';
 import type { ProColumns, ActionType } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
-import ProForm, { ModalForm, ProFormText, ProFormDatePicker, ProFormRadio, ProFormSelect, ProFormTextArea } from '@ant-design/pro-form';
+import ProForm, { ModalForm, ProFormText, ProFormDatePicker, ProFormDateTimePicker, ProFormRadio, ProFormSelect, ProFormTextArea } from '@ant-design/pro-form';
 import type { ProDescriptionsItemProps } from '@ant-design/pro-descriptions';
 import ProDescriptions from '@ant-design/pro-descriptions';
 import type { FormValueType } from './components/UpdateForm';
@@ -401,7 +401,8 @@ const TableList: React.FC = () => {
           }
         }}
         initialValues={{
-          cardId: moment().format('YYYYMMDDhhmmss')
+          cardId: moment().format('YYYYMMDDhhmmss'),
+          createTime: new Date()
         }}
         visible={createModalVisible}
         onVisibleChange={onVisibleChange}
@@ -420,7 +421,6 @@ const TableList: React.FC = () => {
               restTotal: value.total
             }
             success = await handleAdd(params as TableListItem);
-
           }
 
           if (success) {
@@ -535,6 +535,11 @@ const TableList: React.FC = () => {
                     },
                   ]}
                   name="overdate" label="有效期至" placeholder="请选择有效期" />
+              </ProForm.Group>
+              <ProForm.Group>
+              <ProForm.Group>
+                <ProFormDateTimePicker name="createTime" label="充值时间" />
+              </ProForm.Group>
               </ProForm.Group>
             </>
           )

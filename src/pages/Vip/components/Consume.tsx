@@ -68,7 +68,8 @@ const UserMoadl: React.FC<UserMoadlProps> = (props) => {
     visible={visible}
     formRef={formRef}
     initialValues={{
-      deleteNum: 1
+      deleteNum: 1,
+      createTime: new Date()
     }}
     onVisibleChange={onVisibleChange}
     modalProps={{
@@ -82,7 +83,8 @@ const UserMoadl: React.FC<UserMoadlProps> = (props) => {
     onFinish={async (values) => {
       const params = {
         deleteNum: values.deleteNum,
-        id: currentRow.id
+        id: currentRow.id,
+        createTime: values.createTime
       }
       await update(params)
       onOk()
@@ -110,6 +112,9 @@ const UserMoadl: React.FC<UserMoadlProps> = (props) => {
           options={activeConsume}
         >
         </ProFormRadio.Group>
+      </ProForm.Group>
+      <ProForm.Group>
+        <ProFormDateTimePicker name="createTime" label="消费时间" />
       </ProForm.Group>
   </ModalForm>
 }

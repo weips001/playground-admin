@@ -1,5 +1,5 @@
 import {  FormInstance } from 'antd';
-import React, {  useRef } from 'react';
+import React, { useRef } from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
 import type { ProColumns, ActionType } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
@@ -27,12 +27,12 @@ const TableList: React.FC = () => {
       valueType: 'money'
     },
     {
-      title: '总个数',
+      title: '消费个数',
       hideInSearch: true,
-      dataIndex: 'total'
+      dataIndex: 'gameBiNum'
     },
     {
-      title: '充值时间',
+      title: '消费时间',
       dataIndex: 'createTime',
       initialValue: moment(new Date()).format('YYYY-MM-DD'),
       hideInTable: true,

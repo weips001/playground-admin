@@ -58,7 +58,8 @@ const UserMoadl: React.FC<UserMoadlProps> = (props) => {
     visible={visible}
     formRef={formRef}
     initialValues={{
-      sex: '0'
+      sex: '0',
+      createTime: new Date()
     }}
     onVisibleChange={onVisibleChange}
     modalProps={{
@@ -130,6 +131,9 @@ const UserMoadl: React.FC<UserMoadlProps> = (props) => {
             },
           ]}
           name="overdate" label="有效期至" placeholder="请选择有效期" />
+      </ProForm.Group>
+      <ProForm.Group>
+        <ProFormDateTimePicker name="createTime" label="充值时间" />
       </ProForm.Group>
   </ModalForm>
 }

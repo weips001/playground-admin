@@ -68,7 +68,7 @@
               //   component: './Consume',
               // },
               {
-                name: '淘气包会员列表',
+                name: '淘气包会员',
                 icon: 'table',
                 path: '/vip',
                 // authority: 'consume',
@@ -89,7 +89,7 @@
                 component: './ConsumeRecord',
               },
               {
-                name: '游戏币会员记录',
+                name: '游戏币会员',
                 icon: 'table',
                 path: '/game-record',
                 // authority: 'consume',
@@ -101,6 +101,13 @@
                 path: '/gamebi-pay',
                 // authority: 'consume',
                 component: './GameVipRecord',
+              },
+              {
+                name: '游戏币消费记录',
+                icon: 'table',
+                path: '/gamebi-record',
+                // authority: 'consume',
+                component: './GameConsumeRecord',
               },
               // {
               //   name: '付款申请单',
