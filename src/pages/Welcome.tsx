@@ -1,8 +1,7 @@
-import React, {useEffect} from 'react';
+import React from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
 import { Card, Alert, Typography } from 'antd';
 import { useIntl } from 'umi';
-import { addTest } from '../services/user'
 import styles from './Welcome.less';
 
 const CodePreview: React.FC = ({ children }) => (
@@ -15,9 +14,6 @@ const CodePreview: React.FC = ({ children }) => (
 
 export default (): React.ReactNode => {
   const intl = useIntl();
-  useEffect(() => {
-    addTest({name: '', age: ''})
-  }, [])
   return (
     <PageContainer>
       <Card>

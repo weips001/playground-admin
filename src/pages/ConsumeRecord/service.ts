@@ -26,3 +26,9 @@ export async function update(data: TableListParams) {
     data,
   });
 }
+
+export async function syncUserInfo() {
+  return request(`/api/syncUserInfo`, {
+    method: 'GET',
+  });
+}

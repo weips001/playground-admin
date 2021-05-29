@@ -1,15 +1,11 @@
 import { Tag, FormInstance } from 'antd';
-import React, {  useRef } from 'react';
+import React, { useRef } from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
 import type { ProColumns, ActionType } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
 import type { TableListItem } from './data.d';
-import { getTableList} from './service';
-import { cardTypeEnum } from '@/utils/constant'
-
-
-
-
+import { getTableList } from './service';
+import { cardTypeEnum } from '@/utils/constant';
 
 const compStatusList = {
   0: {
@@ -28,7 +24,7 @@ const compStatusList = {
 
 const TableList: React.FC = () => {
   const actionRef = useRef<ActionType>();
-  const searchFormRef = useRef<FormInstance>()
+  const searchFormRef = useRef<FormInstance>();
 
   const columns: ProColumns<TableListItem>[] = [
     {
@@ -37,32 +33,34 @@ const TableList: React.FC = () => {
     },
     {
       title: '手机号',
-      dataIndex: 'phone'
+      dataIndex: 'phone',
+      order: 2,
     },
     {
       title: '卡号',
       dataIndex: 'cardId',
+      order: 1,
     },
     {
       title: '充值日期',
       hideInSearch: true,
       dataIndex: 'createTime',
-      valueType: 'dateTime'
+      valueType: 'dateTime',
     },
     {
       title: '卡种',
       dataIndex: 'cardType',
-      valueEnum: cardTypeEnum
+      valueEnum: cardTypeEnum,
     },
     {
       title: '金额',
       hideInSearch: true,
-      dataIndex: 'money'
+      dataIndex: 'money',
     },
     {
       title: '总次数',
       hideInSearch: true,
-      dataIndex: 'total'
+      dataIndex: 'total',
     },
     {
       title: '有效期',
@@ -71,7 +69,7 @@ const TableList: React.FC = () => {
       sorter: true,
       hideInSearch: true,
       valueType: 'date',
-    }
+    },
   ];
 
   return (

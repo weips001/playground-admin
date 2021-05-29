@@ -1,15 +1,16 @@
 import { Button, message, Upload, Modal, FormInstance } from 'antd';
-import React, { useState, useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
 import type { ProColumns, ActionType } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
 import type { TableListItem } from './data.d';
-import { getTableList } from './service';
-import {  UploadOutlined } from '@ant-design/icons';
+import { getTableList, syncUserInfo } from './service';
+import { UploadOutlined } from '@ant-design/icons';
 
 const TableList: React.FC = () => {
   const actionRef = useRef<ActionType>();
-  const searchFormRef = useRef<FormInstance>()
+  const [updateLoading, setLoading] = useState<boolean>(false);
+  const searchFormRef = useRef<FormInstance>();
 
   const columns: ProColumns<TableListItem>[] = [
     {
@@ -19,10 +20,12 @@ const TableList: React.FC = () => {
     {
       title: '手机号',
       dataIndex: 'phone',
+      order: 2,
     },
     {
       title: '卡号',
       dataIndex: 'cardId',
+      order: 1,
     },
     {
       title: '消费次数',
@@ -33,16 +36,25 @@ const TableList: React.FC = () => {
       title: '消费日期',
       hideInSearch: true,
       dataIndex: 'consumeTime',
-      valueType: 'dateTime'
-    }
+      valueType: 'dateTime',
+    },
+    {
+      title: '备注',
+      hideInSearch: true,
+      dataIndex: 'remark',
+    },
   ];
-
+  const syncUser = async () => {
+    setLoading(true);
+    await syncUserInfo();
+    setLoading(false);
+  };
   const props = {
     name: 'file',
     showUploadList: false,
     action: '/api/uploadConsumeRecord',
     onChange(info) {
-      const { response, name, status } = info.file
+      const { response, name, status } = info.file;
       if (status !== 'uploading') {
         console.log(info.file, info.fileList);
       }
@@ -53,9 +65,11 @@ const TableList: React.FC = () => {
             actionRef.current.reload();
           }
         } else {
-          const list = response.data.errInfo.map(item => (
-            <p>第{item.index + 2}行数据上传失败，失败原因：{item.msg}</p>
-          ))
+          const list = response.data.errInfo.map((item) => (
+            <p>
+              第{item.index + 2}行数据上传失败，失败原因：{item.msg}
+            </p>
+          ));
           Modal.error({
             title: '上传失败！',
             content: list,
@@ -71,7 +85,7 @@ const TableList: React.FC = () => {
     showUploadList: false,
     action: '/api/vipUserUpload',
     onChange(info) {
-      const { response, name, status } = info.file
+      const { response, name, status } = info.file;
       if (status !== 'uploading') {
         console.log(info.file, info.fileList);
       }
@@ -82,9 +96,11 @@ const TableList: React.FC = () => {
             actionRef.current.reload();
           }
         } else {
-          const list = response.data.errInfo.map(item => (
-            <p>第{item.index + 2}行数据上传失败，失败原因：{item.msg}</p>
-          ))
+          const list = response.data.errInfo.map((item) => (
+            <p>
+              第{item.index + 2}行数据上传失败，失败原因：{item.msg}
+            </p>
+          ));
           Modal.error({
             title: '上传失败！',
             content: list,
@@ -106,14 +122,13 @@ const TableList: React.FC = () => {
         search={{
           labelWidth: 120,
         }}
-
         toolBarRender={() => [
           <Upload {...props}>
             <Button icon={<UploadOutlined />}>上传消费记录</Button>
           </Upload>,
-          <Upload {...Userprops}>
-            <Button icon={<UploadOutlined />}>上传会员</Button>
-          </Upload>,
+          <Button onClick={syncUser} loading={updateLoading}>
+            同步用户信息
+          </Button>,
         ]}
         request={(params, sorter, filter) => getTableList({ ...params, sorter, filter })}
         columns={columns}

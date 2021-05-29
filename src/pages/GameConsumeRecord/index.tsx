@@ -1,4 +1,4 @@
-import {  FormInstance } from 'antd';
+import { FormInstance } from 'antd';
 import React, { useRef } from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
 import type { ProColumns, ActionType } from '@ant-design/pro-table';
@@ -9,27 +9,28 @@ import moment from 'moment';
 
 const TableList: React.FC = () => {
   const actionRef = useRef<ActionType>();
-  const searchFormRef = useRef<FormInstance>()
+  const searchFormRef = useRef<FormInstance>();
 
   const columns: ProColumns<TableListItem>[] = [
-    {
-      title: '手机号',
-      dataIndex: 'phone',
-    },
     {
       title: '姓名',
       dataIndex: 'name',
     },
     {
+      title: '手机号',
+      dataIndex: 'phone',
+      order: 2,
+    },
+    {
       title: '充值金额',
       hideInSearch: true,
       dataIndex: 'money',
-      valueType: 'money'
+      valueType: 'money',
     },
     {
       title: '消费个数',
       hideInSearch: true,
-      dataIndex: 'gameBiNum'
+      dataIndex: 'gameBiNum',
     },
     {
       title: '消费时间',
@@ -45,9 +46,9 @@ const TableList: React.FC = () => {
       hideInSearch: true,
       sorter: true,
       valueType: 'dateTime',
-    }
+    },
   ];
-  
+
   return (
     <PageContainer>
       <ProTable<TableListItem>
