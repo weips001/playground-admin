@@ -1,4 +1,4 @@
-import React, { useRef,useState } from 'react'
+import React, { useRef, useState } from 'react';
 import { Button, message } from 'antd';
 import ProForm, {
   ModalForm,
@@ -10,10 +10,10 @@ import ProForm, {
   ProFormSelect,
 } from '@ant-design/pro-form';
 import { PlusOutlined } from '@ant-design/icons';
-import moment from 'moment'
-import type {FormInstance} from 'antd'
-import {consumeNum, rechargeType} from '@/utils/constant'
-import {update} from '../service'
+import moment from 'moment';
+import type { FormInstance } from 'antd';
+import { consumeNum, rechargeType } from '@/utils/constant';
+import { update } from '../service';
 const waitTime = (time: number = 100) => {
   return new Promise((resolve) => {
     setTimeout(() => {
@@ -22,83 +22,84 @@ const waitTime = (time: number = 100) => {
   });
 };
 
-export type CreateUpdateType = 'create' | 'update'
+export type CreateUpdateType = 'create' | 'update';
 
 type UserMoadlProps = {
-  visible: boolean
-  currentRow: {string: any}
-  phone: string
-  onCancel: () => void
-  onOk: () => void
-}
+  visible: boolean;
+  currentRow: { string: any };
+  phone: string;
+  onCancel: () => void;
+  onOk: () => void;
+};
 const titleMap = {
   create: '创建会员',
   update: '更新会员',
-}
+};
 const UserMoadl: React.FC<UserMoadlProps> = (props) => {
-  const { visible, currentRow, onCancel, onOk } = props
-  const formRef = useRef<FormInstance>()
-  const [activeConsume, setActiveConsume] = useState(consumeNum)
+  const { visible, currentRow, onCancel, onOk } = props;
+  const formRef = useRef<FormInstance>();
+  const [activeConsume, setActiveConsume] = useState(consumeNum);
   const onVisibleChange = (visible: boolean) => {
     if (visible) {
-      const {name, phone, restTotal} = currentRow
+      const { name, phone, restTotal } = currentRow;
       const values = {
         name,
-        phone
-      }
-      formRef.current?.setFieldsValue(values)
-      console.log('restTotal', restTotal)
+        phone,
+      };
+      formRef.current?.setFieldsValue(values);
+      console.log('restTotal', restTotal);
       if (restTotal == -1) {
-        const newConsume = activeConsume.filter(item => item.value === 1 )
-        setActiveConsume(newConsume)
+        const newConsume = activeConsume.filter((item) => item.value === 1);
+        setActiveConsume(newConsume);
       } else {
-        const newConsume = activeConsume.filter(item => item.value <= restTotal )
-        setActiveConsume(newConsume)
+        const newConsume = activeConsume.filter((item) => item.value <= restTotal);
+        setActiveConsume(newConsume);
       }
     } else {
-      setActiveConsume(consumeNum)
+      setActiveConsume(consumeNum);
     }
-  }
+  };
 
-  return <ModalForm<{
-    name: string;
-    company: string;
-  }>
-    title="消费"
-    visible={visible}
-    formRef={formRef}
-    initialValues={{
-      deleteNum: 1,
-      createTime: new Date()
-    }}
-    onVisibleChange={onVisibleChange}
-    modalProps={{
-      onCancel: () => {
-        onCancel()
-      },
-      afterClose: () => {
-        formRef.current?.resetFields()
-      }
-    }}
-    onFinish={async (values) => {
-      const params = {
-        deleteNum: values.deleteNum,
-        id: currentRow.id,
-        createTime: values.createTime
-      }
-      await update(params)
-      onOk()
-      message.success('消费成功');
-      return true;
-    }}
-  >
-    <ProForm.Group>
-      <ProFormText width="md" name="name" readonly label="姓名" />
-    </ProForm.Group>
-    <ProForm.Group>
-      <ProFormText width="md" name="phone" label="手机号" readonly />
-    </ProForm.Group>
-    <ProForm.Group>
+  return (
+    <ModalForm<{
+      name: string;
+      company: string;
+    }>
+      title="消费"
+      visible={visible}
+      formRef={formRef}
+      initialValues={{
+        deleteNum: 1,
+        createTime: '2021-05-29 00:00:00',
+      }}
+      onVisibleChange={onVisibleChange}
+      modalProps={{
+        onCancel: () => {
+          onCancel();
+        },
+        afterClose: () => {
+          formRef.current?.resetFields();
+        },
+      }}
+      onFinish={async (values) => {
+        const params = {
+          deleteNum: values.deleteNum,
+          id: currentRow.id,
+          createTime: values.createTime,
+        };
+        await update(params);
+        onOk();
+        message.success('消费成功');
+        return true;
+      }}
+    >
+      <ProForm.Group>
+        <ProFormText width="md" name="name" readonly label="姓名" />
+      </ProForm.Group>
+      <ProForm.Group>
+        <ProFormText width="md" name="phone" label="手机号" readonly />
+      </ProForm.Group>
+      <ProForm.Group>
         <ProFormRadio.Group
           name="deleteNum"
           radioType="button"
@@ -110,13 +111,13 @@ const UserMoadl: React.FC<UserMoadlProps> = (props) => {
             },
           ]}
           options={activeConsume}
-        >
-        </ProFormRadio.Group>
+        ></ProFormRadio.Group>
       </ProForm.Group>
       <ProForm.Group>
         <ProFormDateTimePicker name="createTime" label="消费时间" />
       </ProForm.Group>
-  </ModalForm>
-}
+    </ModalForm>
+  );
+};
 
-export default UserMoadl
+export default UserMoadl;
