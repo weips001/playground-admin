@@ -70,7 +70,7 @@ const UserMoadl: React.FC<UserMoadlProps> = (props) => {
       formRef={formRef}
       initialValues={{
         deleteNum: 1,
-        createTime: '2021-05-29 00:00:00',
+        createTime: new Date(),
       }}
       onVisibleChange={onVisibleChange}
       modalProps={{

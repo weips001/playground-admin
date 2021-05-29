@@ -26,3 +26,11 @@ export async function update(data: TableListParams) {
     data,
   });
 }
+
+export async function getUserByPhone(phone: string) {
+  return request('/api/getUserByPhone', {
+    params: {
+      phone
+    },
+  });
+}

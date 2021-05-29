@@ -22,12 +22,6 @@ const TableList: React.FC = () => {
       order: 2,
     },
     {
-      title: '充值金额',
-      hideInSearch: true,
-      dataIndex: 'money',
-      valueType: 'money',
-    },
-    {
       title: '消费个数',
       hideInSearch: true,
       dataIndex: 'gameBiNum',

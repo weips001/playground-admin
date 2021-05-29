@@ -123,12 +123,12 @@ const TableList: React.FC = () => {
           labelWidth: 120,
         }}
         toolBarRender={() => [
-          <Upload {...props}>
-            <Button icon={<UploadOutlined />}>上传消费记录</Button>
-          </Upload>,
-          <Button onClick={syncUser} loading={updateLoading}>
-            同步用户信息
-          </Button>,
+          // <Upload {...props}>
+          //   <Button icon={<UploadOutlined />}>上传消费记录</Button>
+          // </Upload>,
+          // <Button onClick={syncUser} loading={updateLoading}>
+          //   同步用户信息
+          // </Button>,
         ]}
         request={(params, sorter, filter) => getTableList({ ...params, sorter, filter })}
         columns={columns}

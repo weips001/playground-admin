@@ -18,7 +18,7 @@ import type { ProDescriptionsItemProps } from '@ant-design/pro-descriptions';
 import ProDescriptions from '@ant-design/pro-descriptions';
 import type { FormValueType } from './components/UpdateForm';
 import type { TableListItem } from './data.d';
-import { getTableList, update, add, remove } from './service';
+import { getTableList, update, add, remove, getUserByPhone } from './service';
 import { ExclamationCircleOutlined, UploadOutlined } from '@ant-design/icons';
 import { sexType, rechargeType, cardTypeEnum } from '@/utils/constant';
 import Recharge from './components/Recharge';
@@ -211,44 +211,56 @@ const TableList: React.FC = () => {
       title: '操作',
       dataIndex: 'option',
       valueType: 'option',
-      render: (_, record) => [
-        <a
-          key="recharge"
-          onClick={() => {
-            setRechargeVisible(true);
-            setCurrentRow(record);
-          }}
-        >
-          充值
-        </a>,
-        <a
-          key="consume"
-          onClick={() => {
-            setConsumeVisible(true);
-            setCurrentRow(record);
-          }}
-        >
-          消费
-        </a>,
-        <a
-          key="config"
-          onClick={() => {
-            handleModalVisible(true);
-            setCurrentRow(record);
-            modalRef.current?.setFieldsValue(record);
-          }}
-        >
-          编辑
-        </a>,
-        <a
-          key="subscribeAlert"
-          onClick={async () => {
-            await confirmDel(record.id);
-          }}
-        >
-          删除
-        </a>,
-      ],
+      render: (_, record) => {
+        const { cardType, overdate } = record;
+        const operate = [
+          <a
+            key="recharge"
+            onClick={() => {
+              setRechargeVisible(true);
+              setCurrentRow(record);
+            }}
+          >
+            充值
+          </a>,
+          <a
+            key="consume"
+            onClick={() => {
+              setConsumeVisible(true);
+              setCurrentRow(record);
+            }}
+          >
+            消费
+          </a>,
+          <a
+            key="config"
+            onClick={() => {
+              handleModalVisible(true);
+              setCurrentRow(record);
+              modalRef.current?.setFieldsValue(record);
+            }}
+          >
+            编辑
+          </a>,
+          // <a
+          //   key="subscribeAlert"
+          //   onClick={async () => {
+          //     await confirmDel(record.id);
+          //   }}
+          // >
+          //   删除
+          // </a>,
+        ];
+        if (cardType === '1') {
+          if (overdate) {
+            const isDelay = new Date(overdate).getTime() < new Date().getTime();
+            if (isDelay) {
+              return null;
+            }
+          }
+        }
+        return operate;
+      },
     },
   ];
   const cancelRechargeModal = () => {
@@ -257,10 +269,24 @@ const TableList: React.FC = () => {
   const cancelConsumeModal = () => {
     setConsumeVisible(false);
   };
-  const onVisibleChange = (visible: boolean) => {
+  const onVisibleChange = async (visible: boolean) => {
     const phone = searchFormRef.current?.getFieldValue('phone') || '';
     if (visible && phone.length === 11 && !currentRow) {
-      modalRef.current?.setFieldsValue({ phone });
+      const { data } = await getUserByPhone(phone);
+      if (data) {
+        const { name, phone, birthday, sex, cardId, remark } = data;
+        const values = {
+          name,
+          phone,
+          birthday,
+          sex,
+          cardId,
+          remark,
+        };
+        modalRef.current?.setFieldsValue(values);
+      } else {
+        modalRef.current?.setFieldsValue({ phone });
+      }
     }
     handleModalVisible(visible);
   };
@@ -346,12 +372,12 @@ const TableList: React.FC = () => {
           labelWidth: 120,
         }}
         toolBarRender={() => [
-          <Upload {...props}>
-            <Button icon={<UploadOutlined />}>上传充值记录</Button>
-          </Upload>,
-          <Upload {...Userprops}>
-            <Button icon={<UploadOutlined />}>上传会员</Button>
-          </Upload>,
+          // <Upload {...props}>
+          //   <Button icon={<UploadOutlined />}>上传充值记录</Button>
+          // </Upload>,
+          // <Upload {...Userprops}>
+          //   <Button icon={<UploadOutlined />}>上传会员</Button>
+          // </Upload>,
           <Button
             type="primary"
             key="primary"
@@ -432,7 +458,8 @@ const TableList: React.FC = () => {
               ...value,
               restTotal: value.total,
             };
-            success = await handleAdd(params as TableListItem);
+            console.log('params---', params);
+            // success = await handleAdd(params as TableListItem);
           }
 
           if (success) {

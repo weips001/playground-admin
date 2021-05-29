@@ -163,7 +163,11 @@ const TableList: React.FC = () => {
       render(_, record) {
         const { total, restTotal } = record;
         const used = total - restTotal;
-        return Math.min(used, total) || '-';
+        console.log(Math.min(used, total));
+        if (typeof used === 'number') {
+          return Math.min(used, total);
+        }
+        return '-';
       },
     },
     {
@@ -211,14 +215,14 @@ const TableList: React.FC = () => {
         >
           编辑
         </a>,
-        <a
-          key="subscribeAlert"
-          onClick={async () => {
-            await confirmDel(record.id);
-          }}
-        >
-          删除
-        </a>,
+        // <a
+        //   key="subscribeAlert"
+        //   onClick={async () => {
+        //     await confirmDel(record.id);
+        //   }}
+        // >
+        //   删除
+        // </a>,
       ],
     },
   ];
@@ -246,38 +250,7 @@ const TableList: React.FC = () => {
   const props = {
     name: 'file',
     showUploadList: false,
-    action: '/api/uploadFile',
-    onChange(info) {
-      const { response, name, status } = info.file;
-      if (status !== 'uploading') {
-        console.log(info.file, info.fileList);
-      }
-      if (status === 'done') {
-        if (response.code === 0) {
-          message.success(`${name} 上传成功。`);
-          if (actionRef.current) {
-            actionRef.current.reload();
-          }
-        } else {
-          const list = response.data.errInfo.map((item) => (
-            <p>
-              第{item.index + 2}行数据上传失败，失败原因：{item.msg}
-            </p>
-          ));
-          Modal.error({
-            title: '上传失败！',
-            content: list,
-          });
-        }
-      } else if (info.file.status === 'error') {
-        message.error(`${name} 上传失败。`);
-      }
-    },
-  };
-  const Userprops = {
-    name: 'file',
-    showUploadList: false,
-    action: '/api/vipUserUpload',
+    action: '/api/gameBi/uploadFile',
     onChange(info) {
       const { response, name, status } = info.file;
       if (status !== 'uploading') {
@@ -317,9 +290,9 @@ const TableList: React.FC = () => {
           labelWidth: 120,
         }}
         toolBarRender={() => [
-          <Upload {...props}>
-            <Button icon={<UploadOutlined />}>上传游戏币记录</Button>
-          </Upload>,
+          // <Upload {...props}>
+          //   <Button icon={<UploadOutlined />}>上传游戏币记录</Button>
+          // </Upload>,
           <Button
             type="primary"
             key="primary"
