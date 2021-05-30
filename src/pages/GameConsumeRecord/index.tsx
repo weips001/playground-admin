@@ -29,17 +29,16 @@ const TableList: React.FC = () => {
     {
       title: '消费时间',
       dataIndex: 'createTime',
-      initialValue: moment(new Date()).format('YYYY-MM-DD'),
-      hideInTable: true,
-      valueType: 'date',
+      hideInSearch: true,
+      valueType: 'dateTime',
     },
     {
-      title: '充值时间',
+      title: '消费时间',
       dataIndex: 'createTime',
-      initialValue: new Date(),
-      hideInSearch: true,
+      initialValue: moment().format('YYYY-MM-DD'),
+      hideInTable: true,
       sorter: true,
-      valueType: 'dateTime',
+      valueType: 'date',
     },
   ];
 
