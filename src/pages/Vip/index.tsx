@@ -458,8 +458,8 @@ const TableList: React.FC = () => {
               ...value,
               restTotal: value.total,
             };
-            console.log('params---', params);
-            // success = await handleAdd(params as TableListItem);
+            // console.log('params---', params);
+            success = await handleAdd(params as TableListItem);
           }
 
           if (success) {
