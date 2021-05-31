@@ -1,7 +1,6 @@
 import { PlusOutlined } from '@ant-design/icons';
-import { Button, message, Upload, Modal, Drawer, Tag, FormInstance } from 'antd';
+import { Button, message, Modal, Drawer, Tag, FormInstance } from 'antd';
 import React, { useState, useRef } from 'react';
-import { useIntl } from 'umi';
 import { PageContainer, FooterToolbar } from '@ant-design/pro-layout';
 import type { ProColumns, ActionType } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
@@ -10,19 +9,17 @@ import ProForm, {
   ProFormText,
   ProFormDatePicker,
   ProFormRadio,
-  ProFormSelect,
   ProFormTextArea,
 } from '@ant-design/pro-form';
 import type { ProDescriptionsItemProps } from '@ant-design/pro-descriptions';
 import ProDescriptions from '@ant-design/pro-descriptions';
-import type { FormValueType } from './components/UpdateForm';
 import type { TableListItem } from './data.d';
 import { getTableList, update, add, remove } from './service';
-import { ExclamationCircleOutlined, UploadOutlined } from '@ant-design/icons';
-import { sexType, gameBiType, cardTypeEnum } from '@/utils/constant';
+import { ExclamationCircleOutlined } from '@ant-design/icons';
+import { gameBiType } from '@/utils/constant';
 import Recharge from './components/Recharge';
 import Consume from './components/Consume';
-import moment from '_moment@2.29.1@moment';
+import moment from 'moment';
 
 const { confirm } = Modal;
 /**
@@ -120,7 +117,7 @@ const TableList: React.FC = () => {
       onOk() {
         return handleRemove(id);
       },
-      onCancel() {},
+      onCancel() { },
     });
   };
 
