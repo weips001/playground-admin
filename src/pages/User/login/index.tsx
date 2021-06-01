@@ -17,7 +17,7 @@ import type { StateType } from '@/models/login';
 import type { LoginParamsType } from '@/services/login';
 import type { ConnectState } from '@/models/connect';
 import styles from './index.less';
-import {history} from 'umi'
+import { history } from 'umi'
 
 export type LoginProps = {
   dispatch: Dispatch;
@@ -45,7 +45,7 @@ const Login: React.FC<LoginProps> = (props) => {
   const intl = useIntl();
 
   const handleSubmit = async (values: LoginParamsType) => {
-    const {token} = await login(values)
+    const { token } = await login(values)
     localStorage.setItem('token', token)
     await dispatch({
       type: 'user/fetchCurrent',
@@ -102,7 +102,7 @@ const Login: React.FC<LoginProps> = (props) => {
         {type === 'account' && (
           <>
             <ProFormText
-              name="userPhone"
+              name="callPhone"
               fieldProps={{
                 size: 'large',
                 prefix: <UserOutlined className={styles.prefixIcon} />,

@@ -4,15 +4,15 @@ import React, { useState, useRef, useEffect } from 'react';
 import { PageContainer, FooterToolbar } from '@ant-design/pro-layout';
 import type { ProColumns, ActionType } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
-import { ModalForm, ProFormText,ProFormCheckbox } from '@ant-design/pro-form';
+import { ModalForm, ProFormText, ProFormCheckbox } from '@ant-design/pro-form';
 import type { ProDescriptionsItemProps } from '@ant-design/pro-descriptions';
 import ProDescriptions from '@ant-design/pro-descriptions';
 import type { FormValueType } from './components/UpdateForm';
 import type { TableListItem } from './data.d';
 import { queryRule, updateRule, addRule, removeRule } from './service';
-import {getTableList} from '@/pages/Role/service'
+import { getTableList } from '@/pages/Role/service'
 import { ExclamationCircleOutlined } from '@ant-design/icons';
-const {confirm} = Modal
+const { confirm } = Modal
 /**
  * 添加节点
  * @param fields
@@ -84,8 +84,8 @@ const TableList: React.FC = () => {
   const [selectedRowsState, setSelectedRows] = useState<string[]>([]);
   const [roleList, setRoleList] = useState([])
   useEffect(() => {
-    async function getRoleList () {
-      const {data = []} = await getTableList()
+    async function getRoleList() {
+      const { data = [] } = await getTableList()
       console.log(data)
       const list = data.map(item => ({
         value: item.id,
@@ -95,7 +95,7 @@ const TableList: React.FC = () => {
     }
     getRoleList()
   }, [])
-  const handleRemove = async (selectedRows: string[]) => {
+  const handleRemove = async (selectedRows: string) => {
     if (!selectedRows) return true;
     try {
       await removeRule(selectedRows);
@@ -113,7 +113,7 @@ const TableList: React.FC = () => {
    *
    * @param selectedRows
    */
-  const confirmDel = (selectedRows:string[]) => {
+  const confirmDel = (selectedRows: string) => {
     confirm({
       title: '是否确认删除',
       icon: <ExclamationCircleOutlined />,
@@ -124,16 +124,14 @@ const TableList: React.FC = () => {
       onOk() {
         return handleRemove(selectedRows)
       },
-      onCancel() {},
+      onCancel() { },
     })
   }
 
   const columns: ProColumns<TableListItem>[] = [
-    
     {
-      title: '工号',
-      dataIndex: 'userCode',
-      tip: '规则名称是唯一的 key',
+      title: '姓名',
+      dataIndex: 'name',
       render: (dom, entity) => {
         return (
           <a
@@ -148,30 +146,18 @@ const TableList: React.FC = () => {
       },
     },
     {
-      title: '姓名',
-      dataIndex: 'userName',
-    },
-    {
       title: '角色',
       dataIndex: 'roleName',
+      hideInSearch: true,
       render(_, record) {
         const roleName = record.roleName.join('、')
         return roleName
       }
     },
     {
-      title: '部门',
-      dataIndex: 'department',
-    },
-    {
       title: '联系方式',
       hideInForm: true,
-      dataIndex: 'userPhone',
-    },
-    {
-      title: '邮箱',
-      hideInForm: true,
-      dataIndex: 'userEmail',
+      dataIndex: 'callPhone',
     },
     {
       title: '创建时间',
@@ -202,8 +188,8 @@ const TableList: React.FC = () => {
           编辑
         </a>,
         <a key="subscribeAlert" onClick={async () => {
-          await confirmDel([record.id])
-          
+          await confirmDel(record.id)
+
         }}>
           删除
         </a>,
@@ -217,7 +203,7 @@ const TableList: React.FC = () => {
   return (
     <PageContainer>
       <ProTable<TableListItem>
-        headerTitle="查询表格"
+        headerTitle="人员管理"
         bordered={true}
         actionRef={actionRef}
         rowKey="id"
@@ -263,20 +249,20 @@ const TableList: React.FC = () => {
             </div>
           }
         >
-          <Button
+          {/* <Button
             onClick={async () => {
               await confirmDel(selectedRowsState);
               setSelectedRows([]);
             }}
           >
             批量删除
-          </Button>
+          </Button> */}
           <Button type="primary">批量审批</Button>
         </FooterToolbar>
       )}
       <ModalForm
         formRef={modalRef}
-        title={currentRow ? "编辑公司": "新建公司"}
+        title={currentRow ? "修改人员信息" : "新建人员"}
         width="400px"
         modalProps={{
           afterClose() {
@@ -289,9 +275,10 @@ const TableList: React.FC = () => {
         onFinish={async (value) => {
           let params = {
             ...value,
+            role: []
           }
           let success
-          if(currentRow?.id) {
+          if (currentRow?.id) {
             params = {
               ...currentRow,
               ...value
@@ -310,29 +297,19 @@ const TableList: React.FC = () => {
           }
         }}
       >
-        {
-          currentRow?.id && (
-            <ProFormText
-              label="工号"
-              disabled
-              width="md"
-              name="userCode"
-            />
-          )
-        }
         <ProFormText
           rules={[
             {
               required: true,
-              message: '公司名称为必填项',
+              message: '姓名为必填项',
             },
           ]}
           label="姓名"
           width="md"
-          name="userName"
+          name="name"
         />
         <ProFormText
-          name="userPhone"
+          name="callPhone"
           label="联系方式"
           width="md"
           placeholder="请输入联系方式"
@@ -347,12 +324,12 @@ const TableList: React.FC = () => {
             },
           ]}
         />
-          <ProFormCheckbox.Group
-            name="role"
-            rules={[{required: true}]}
-            label="角色"
-            options={roleList}
-          />
+        {/* <ProFormCheckbox.Group
+          name="role"
+          rules={[{ required: true }]}
+          label="角色"
+          options={roleList}
+        />
         <ProFormText
           label="部门"
           width="md"
@@ -369,7 +346,7 @@ const TableList: React.FC = () => {
               message: '不合法的邮箱格式!',
             },
           ]}
-        />
+        /> */}
       </ModalForm>
       <Drawer
         width={600}

@@ -69,19 +69,23 @@ request.interceptors.request.use((request: string, options: RequestOptionsInit) 
 });
 
 request.interceptors.response.use(async (response, options) => {
-  const res = await response.clone().json();
-  const { code } = res;
-  if (code === 'Unauthorized') {
+  if (response.status === 401) {
     if (window.location.pathname !== '/user/login') {
+      localStorage.removeItem('token')
+      localStorage.removeItem('user')
       history.replace('/user/login')
     }
-    return response
+    return Promise.reject(response);
+  } else {
+    const res = await response.clone().json();
+    const { code, success } = res;
+    if (code === 0 || success) {
+      return response;
+    }
+    message.error(res.msg)
+    return Promise.reject(res);
   }
-  if (code === 0) {
-    return response;
-  }
-  message.error(res.msg)
-  return Promise.reject(res);
+
 });
 
 export default request;

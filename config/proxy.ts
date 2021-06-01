@@ -8,8 +8,8 @@
 export default {
   dev: {
     '/api': {
-      target: 'http://39.99.228.79:7006',
-      // target: 'http://127.0.0.1:7006',
+      // target: 'http://39.99.228.79:7006',
+      target: 'http://127.0.0.1:7006',
       changeOrigin: true,
       pathRewrite: { '^': '' },
     },

@@ -25,7 +25,7 @@ const UserLayout: React.FC<UserLayoutProps> = (props) => {
       pathname: '',
     },
   } = props;
-  const {} = useIntl();
+  const { } = useIntl();
   const { breadcrumb } = getMenuData(routes);
   const title = getPageTitle({
     pathname: location.pathname,
@@ -48,10 +48,10 @@ const UserLayout: React.FC<UserLayoutProps> = (props) => {
             <div className={styles.header}>
               <Link to="/">
                 <img alt="logo" className={styles.logo} src={logo} />
-                <span className={styles.title}>财务ERP</span>
+                <span className={styles.title}>会员系统</span>
               </Link>
             </div>
-            <div className={styles.desc}>财务ERP 是中国使用最方便的ERP</div>
+            <div className={styles.desc}>会员系统 是使用最方便的系统</div>
           </div>
           {children}
         </div>

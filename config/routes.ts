@@ -24,14 +24,21 @@
             routes: [
               {
                 path: '/',
-                redirect: '/welcome',
+                redirect: '/analysis',
               },
+              // {
+              //   path: '/welcome',
+              //   name: '欢迎登录',
+              //   icon: 'smile',
+              //   authority: 'welcome',
+              //   component: './Welcome',
+              // },
               {
-                path: '/welcome',
-                name: '欢迎登录',
+                path: '/analysis',
+                name: '数据分析',
                 icon: 'smile',
-                authority: 'welcome',
-                component: './Welcome',
+                // authority: 'welcome',
+                component: './Analysis',
               },
               // {
               //   path: '/admin',
@@ -146,13 +153,13 @@
               //   authority: 'bill',
               //   component: './Bill',
               // },
-              // {
-              //   name: '人员管理',
-              //   icon: 'table',
-              //   path: '/user-list',
-              //   authority: 'user',
-              //   component: './User/list',
-              // },
+              {
+                name: '人员管理',
+                icon: 'table',
+                path: '/user-list',
+                // authority: 'user',
+                component: './User/list',
+              },
               // {
               //   name: '角色管理',
               //   icon: 'table',

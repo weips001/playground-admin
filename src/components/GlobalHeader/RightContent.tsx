@@ -49,9 +49,9 @@ const GlobalHeaderRight: React.SFC<GlobalHeaderRightProps> = (props) => {
             value: 'Pro Layout',
           },
         ]}
-        // onSearch={value => {
-        //   //console.log('input', value);
-        // }}
+      // onSearch={value => {
+      //   //console.log('input', value);
+      // }}
       />
       <Tooltip title="使用文档">
         <a
@@ -72,7 +72,7 @@ const GlobalHeaderRight: React.SFC<GlobalHeaderRightProps> = (props) => {
           <Tag color={ENVTagColor[REACT_APP_ENV]}>{REACT_APP_ENV}</Tag>
         </span>
       )}
-      <SelectLang className={styles.action} />
+      {/* <SelectLang className={styles.action} /> */}
     </div>
   );
 };

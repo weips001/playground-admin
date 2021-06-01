@@ -4,7 +4,7 @@ export type TableListItem = {
   status: string;
   userName: string;
   department: string;
-  userPhone: string;
+  callPhone: string;
   userEmail: string;
   status: string;
   createTime: string;
@@ -26,7 +26,7 @@ export type TableListParams = {
   status?: string;
   userCode?: string;
   userName?: string;
-  userPhone?: string;
+  callPhone?: string;
   department?: string;
   userEmail?: string;
   pageSize?: number;

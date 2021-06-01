@@ -7,12 +7,9 @@ export async function queryRule(params?: TableListParams) {
   });
 }
 
-export async function removeRule(deleteArr: string[]) {
-  return request('/api/user', {
-    method: 'delete',
-    data: {
-      deleteArr
-    },
+export async function removeRule(id: string) {
+  return request(`/api/user/${id}`, {
+    method: 'delete'
   });
 }
 
