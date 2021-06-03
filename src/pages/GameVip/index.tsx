@@ -117,7 +117,7 @@ const TableList: React.FC = () => {
       onOk() {
         return handleRemove(id);
       },
-      onCancel() { },
+      onCancel() {},
     });
   };
 
@@ -175,7 +175,7 @@ const TableList: React.FC = () => {
     {
       title: '充值时间',
       dataIndex: 'createTime',
-      hideInForm: true,
+      hideInSearch: true,
       sorter: true,
       valueType: 'dateTime',
     },

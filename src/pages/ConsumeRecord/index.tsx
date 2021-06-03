@@ -6,6 +6,7 @@ import ProTable from '@ant-design/pro-table';
 import type { TableListItem } from './data.d';
 import { getTableList, syncUserInfo } from './service';
 import { UploadOutlined } from '@ant-design/icons';
+import moment from 'moment';
 
 const TableList: React.FC = () => {
   const actionRef = useRef<ActionType>();
@@ -25,6 +26,15 @@ const TableList: React.FC = () => {
     {
       title: '卡号',
       dataIndex: 'cardId',
+      order: 1,
+    },
+    {
+      title: '消费日期',
+      dataIndex: 'consumeTime',
+      initialValue: moment().format('YYYY-MM-DD'),
+      hideInTable: true,
+      sorter: true,
+      valueType: 'date',
       order: 1,
     },
     {

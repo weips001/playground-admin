@@ -6,6 +6,7 @@ import ProTable from '@ant-design/pro-table';
 import type { TableListItem } from './data.d';
 import { getTableList } from './service';
 import { cardTypeEnum } from '@/utils/constant';
+import moment from 'moment';
 
 const compStatusList = {
   0: {
@@ -34,18 +35,27 @@ const TableList: React.FC = () => {
     {
       title: '手机号',
       dataIndex: 'phone',
-      order: 2,
+      order: 3,
     },
     {
       title: '卡号',
       dataIndex: 'cardId',
-      order: 1,
+      order: 2,
     },
     {
       title: '充值日期',
       hideInSearch: true,
       dataIndex: 'createTime',
       valueType: 'dateTime',
+    },
+    {
+      title: '充值日期',
+      dataIndex: 'createTime',
+      initialValue: moment().format('YYYY-MM-DD'),
+      hideInTable: true,
+      sorter: true,
+      valueType: 'date',
+      order: 1,
     },
     {
       title: '卡种',
