@@ -58,6 +58,12 @@ export const consumeNum = generateConsumeOption(5)
 
 export const gameBiType = [
   {
+    label: '100元',
+    value: 100,
+    total: 130,
+    month: 12,
+  },
+  {
     label: '200元',
     value: 200,
     total: 270,
@@ -65,4 +71,4 @@ export const gameBiType = [
   }
 ]
 
-export const consumeGameBi = generateConsumeOption(20, '个')
+export const consumeGameBi = generateConsumeOption(30, '个')
