@@ -35,7 +35,7 @@ const TableList: React.FC = () => {
     {
       title: '消费时间',
       dataIndex: 'createTime',
-      initialValue: moment().format('YYYY-MM-DD'),
+      // initialValue: moment().format('YYYY-MM-DD'),
       hideInTable: true,
       sorter: true,
       valueType: 'date',
