@@ -569,8 +569,8 @@ const TableList: React.FC = () => {
               ></ProFormRadio.Group>
             </ProForm.Group>
             <ProForm.Group>
-              <ProFormText width="md" name="money" readonly label="金额" />
-              <ProFormText width="md" name="total" label="次数" readonly />
+              <ProFormText width="md" name="money" label="金额" />
+              <ProFormText width="md" name="total" label="次数" />
             </ProForm.Group>
             <ProForm.Group>
               <ProFormDatePicker

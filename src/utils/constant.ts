@@ -1,10 +1,31 @@
 export const rechargeType = [
   {
     label: '100元',
-    value: 3,
+    value: 4,
     cardType: '0',
     money: 100,
     month: 12,
+  },
+  {
+    label: '200元（月卡）',
+    value: -2,
+    cardType: '2',
+    money: 200,
+    month: 1
+  },
+  {
+    label: '400元（季卡）',
+    value: -3,
+    cardType: '3',
+    money: 400,
+    month: 3
+  },
+  {
+    label: '800（年卡）',
+    value: -4,
+    cardType: '1',
+    money: 800,
+    month: 12
   },
   {
     label: '300元',
@@ -42,7 +63,9 @@ export const sexType = [
 
 export const cardTypeEnum = {
   0: '次卡',
-  1: '年卡'
+  2: '月卡',
+  3: '季卡',
+  1: '年卡',
 }
 function generateConsumeOption (total = 3, unit = '次') {
   let res = []
