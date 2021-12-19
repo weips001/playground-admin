@@ -188,11 +188,17 @@ const TableList: React.FC = () => {
       title: '总次数',
       hideInSearch: true,
       dataIndex: 'total',
+      render(_, record) {
+        return record.total > 0 ? record.total : '不限次';
+      },
     },
     {
       title: '剩余次数',
       hideInSearch: true,
       dataIndex: 'restTotal',
+      render(_, record) {
+        return record.restTotal > 0 ? record.restTotal : '不限次';
+      },
     },
     {
       title: '已用次数',
