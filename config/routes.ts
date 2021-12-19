@@ -40,6 +40,13 @@
                 // authority: 'welcome',
                 component: './Analysis',
               },
+              {
+                name: '今日收入',
+                icon: 'table',
+                path: '/finance',
+                // authority: 'consume',
+                component: './Finance',
+              },
               // {
               //   path: '/admin',
               //   name: 'admin',
