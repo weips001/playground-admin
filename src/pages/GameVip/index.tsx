@@ -160,7 +160,6 @@ const TableList: React.FC = () => {
       render(_, record) {
         const { total, restTotal } = record;
         const used = total - restTotal;
-        console.log(Math.min(used, total));
         if (typeof used === 'number') {
           return Math.min(used, total);
         }
@@ -356,7 +355,6 @@ const TableList: React.FC = () => {
         visible={createModalVisible}
         onVisibleChange={onVisibleChange}
         onFinish={async (value) => {
-          console.log(value);
           let success;
           if (currentRow?.id) {
             const params = {
@@ -435,7 +433,8 @@ const TableList: React.FC = () => {
               ></ProFormRadio.Group>
             </ProForm.Group>
             <ProForm.Group>
-              <ProFormText width="md" name="total" label="个数" readonly />
+              <ProFormText width="md" name="money" label="金额" />
+              <ProFormText width="md" name="total" label="个数" />
             </ProForm.Group>
             <ProForm.Group>
               <ProFormDatePicker
