@@ -57,6 +57,7 @@ request.interceptors.request.use((request: string, options: RequestOptionsInit) 
       ...options.headers,
       token,
       authorization: `Bearer ${token}`,
+      'Place-id': '99acf2f2f2914227b7301e29572ebe63'
     };
   }
   if (compid) {
