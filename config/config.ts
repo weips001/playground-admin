@@ -9,6 +9,7 @@ export default defineConfig({
   outputPath: '/app/dist',
   hash: true,
   antd: {},
+  webpack5: {},
   dva: {
     hmr: true,
   },
