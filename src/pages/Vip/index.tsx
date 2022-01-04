@@ -390,6 +390,11 @@ const TableList: React.FC = () => {
             onClick={() => {
               setCurrentRow(undefined);
               handleModalVisible(true);
+              let d = new Date()
+              d.setFullYear(d.getFullYear() + 1);
+              modalRef.current?.setFieldsValue({
+                overdate: d
+              });
             }}
           >
             <PlusOutlined /> 新增
@@ -508,19 +513,6 @@ const TableList: React.FC = () => {
           />
         </ProForm.Group>
         <ProForm.Group>
-          {/* <ProFormDatePicker
-            width="md"
-            rules={[
-              {
-                required: true,
-                message: '请选择娃子的生日!',
-              },
-            ]}
-            disabled={!!currentRow}
-            name="birthday"
-            label="生日"
-            placeholder="请选择娃子的生日1"
-          /> */}
           <ProFormSelect
             width="md"
             rules={[
