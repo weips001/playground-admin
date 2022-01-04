@@ -508,7 +508,7 @@ const TableList: React.FC = () => {
           />
         </ProForm.Group>
         <ProForm.Group>
-          <ProFormDatePicker
+          {/* <ProFormDatePicker
             width="md"
             rules={[
               {
@@ -519,8 +519,8 @@ const TableList: React.FC = () => {
             disabled={!!currentRow}
             name="birthday"
             label="生日"
-            placeholder="请选择娃子的生日"
-          />
+            placeholder="请选择娃子的生日1"
+          /> */}
           <ProFormSelect
             width="md"
             rules={[
@@ -533,8 +533,6 @@ const TableList: React.FC = () => {
             name="sex"
             label="性别"
           />
-        </ProForm.Group>
-        <ProForm.Group>
           <ProFormText
             disabled={!!currentRow}
             width="md"
@@ -542,6 +540,9 @@ const TableList: React.FC = () => {
             label="卡号"
             placeholder="请输入卡号"
           />
+        </ProForm.Group>
+        <ProForm.Group>
+          
         </ProForm.Group>
         <ProForm.Group>
           <ProFormTextArea name="remark" label="备注" width="xl" placeholder="请输入备注" />

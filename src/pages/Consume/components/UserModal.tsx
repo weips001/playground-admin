@@ -98,14 +98,14 @@ const UserMoadl: React.FC<UserMoadlProps> = (props) => {
         placeholder="请输入家长的手机号" />
     </ProForm.Group>
     <ProForm.Group>
-      <ProFormDatePicker width="md"
+      {/* <ProFormDatePicker width="md"
         rules={[
           {
             required: true,
             message: '请选择娃子的生日!',
           },
         ]}
-        name="birthday" label="生日" placeholder="请选择娃子的生日" />
+        name="birthday" label="生日" placeholder="请选择娃子的生日1" /> */}
       <ProFormSelect
           width="md"
           rules={[
@@ -118,9 +118,10 @@ const UserMoadl: React.FC<UserMoadlProps> = (props) => {
           name="sex"
           label="性别"
         />
+         <ProFormText width="md" name="cardId" label="卡号" placeholder="请输入卡号" />
     </ProForm.Group>
     <ProForm.Group>
-      <ProFormText width="md" name="cardId" label="卡号" placeholder="请输入卡号" />
+     
     </ProForm.Group>
     <ProForm.Group>
       <ProFormTextArea
