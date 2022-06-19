@@ -23,7 +23,7 @@ import { ExclamationCircleOutlined, UploadOutlined } from '@ant-design/icons';
 import { sexType, rechargeType, cardTypeEnum } from '@/utils/constant';
 import Recharge from './components/Recharge';
 import Consume from './components/Consume';
-import moment from '_moment@2.29.1@moment';
+import moment from 'moment';
 
 const { confirm } = Modal;
 /**

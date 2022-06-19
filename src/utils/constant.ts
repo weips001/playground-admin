@@ -94,4 +94,4 @@ export const gameBiType = [
   }
 ]
 
-export const consumeGameBi = generateConsumeOption(30, '个')
+export const consumeGameBi = generateConsumeOption(40, '个')
