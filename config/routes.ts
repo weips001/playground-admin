@@ -123,6 +123,13 @@
                 // authority: 'consume',
                 component: './GameConsumeRecord',
               },
+              {
+                name: '短信通知',
+                icon: 'table',
+                path: '/notice',
+                // authority: 'consume',
+                component: './Notice',
+              },
               // {
               //   name: '付款申请单',
               //   icon: 'table',
