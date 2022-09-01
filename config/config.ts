@@ -13,6 +13,7 @@ export default defineConfig({
   dva: {
     hmr: true,
   },
+  mfsu: {},
   history: {
     type: 'browser',
   },

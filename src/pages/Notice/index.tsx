@@ -39,7 +39,7 @@ const TableList: React.FC = () => {
       initialValue: moment().format('YYYY-MM'),
       hideInTable: true,
       sorter: true,
-      valueType: 'dateMonth',
+      valueType: 'dateYear',
       order: 1,
     },
     {
@@ -166,6 +166,11 @@ const TableList: React.FC = () => {
         }}
         rowSelection={{
           selections: [Table.SELECTION_ALL, Table.SELECTION_INVERT],
+          getCheckboxProps(record) {
+            return {
+              disabled: record.isSend === '1'
+            }
+          },
         }}
         toolBarRender={() => [
           // <Upload {...props}>
