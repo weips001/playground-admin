@@ -1,16 +1,19 @@
-import { Tag, message, Table, Modal, FormInstance } from 'antd';
+import { Tag, message, Table, Modal, FormInstance, Space } from 'antd';
 import React, { useRef, useState } from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
 import type { ProColumns, ActionType } from '@ant-design/pro-table';
+import { ExclamationCircleOutlined } from '@ant-design/icons';
 import ProTable from '@ant-design/pro-table';
 import type { TableListItem } from './data.d';
-import { getTableList, syncUserInfo } from './service';
-import { UploadOutlined } from '@ant-design/icons';
+import { getTableList, syncUserInfo, sendMsg } from './service';
 import moment from 'moment';
+
+const { confirm } = Modal;
 
 const TableList: React.FC = () => {
   const actionRef = useRef<ActionType>();
   const [updateLoading, setLoading] = useState<boolean>(false);
+  const [selectedKeys, setSelectedKeys] = useState<React.Key[]>([]);
   const searchFormRef = useRef<FormInstance>();
 
   const columns: ProColumns<TableListItem>[] = [
@@ -60,6 +63,20 @@ const TableList: React.FC = () => {
     },
     {
       title: '上次消费日期',
+      hideInTable: true,
+      dataIndex: 'lastDateRange',
+      valueType: 'dateRange',
+      search: {
+        transform(value) {
+          return {
+            start: value[0],
+            end: value[1]
+          }
+        }
+      }
+    },
+    {
+      title: '上次消费日期',
       hideInSearch: true,
       dataIndex: 'lastUseDate',
       valueType: 'dateTime',
@@ -86,73 +103,21 @@ const TableList: React.FC = () => {
       dataIndex: 'remark',
     },
   ];
-  const syncUser = async () => {
-    setLoading(true);
-    await syncUserInfo();
-    setLoading(false);
+  const sendMulipleMsg = async () => {
+    confirm({
+      title: '短信发送确认?',
+      icon: <ExclamationCircleOutlined />,
+      content: `您已选择${selectedKeys.length}条信息准备发送`,
+      async onOk() {
+        await sendMsg(selectedKeys)
+        actionRef.current?.reloadAndRest?.()
+        return
+      },
+    })
   };
-  const props = {
-    name: 'file',
-    showUploadList: false,
-    action: '/api/uploadConsumeRecord',
-    onChange(info) {
-      const { response, name, status } = info.file;
-      if (status !== 'uploading') {
-        console.log(info.file, info.fileList);
-      }
-      if (status === 'done') {
-        if (response.code === 0) {
-          message.success(`${name} 上传成功。`);
-          if (actionRef.current) {
-            actionRef.current.reload();
-          }
-        } else {
-          const list = response.data.errInfo.map((item) => (
-            <p>
-              第{item.index + 2}行数据上传失败，失败原因：{item.msg}
-            </p>
-          ));
-          Modal.error({
-            title: '上传失败！',
-            content: list,
-          });
-        }
-      } else if (info.file.status === 'error') {
-        message.error(`${name} 上传失败。`);
-      }
-    },
-  };
-  const Userprops = {
-    name: 'file',
-    showUploadList: false,
-    action: '/api/vipUserUpload',
-    onChange(info) {
-      const { response, name, status } = info.file;
-      if (status !== 'uploading') {
-        console.log(info.file, info.fileList);
-      }
-      if (status === 'done') {
-        if (response.code === 0) {
-          message.success(`${name} 上传成功。`);
-          if (actionRef.current) {
-            actionRef.current.reload();
-          }
-        } else {
-          const list = response.data.errInfo.map((item) => (
-            <p>
-              第{item.index + 2}行数据上传失败，失败原因：{item.msg}
-            </p>
-          ));
-          Modal.error({
-            title: '上传失败！',
-            content: list,
-          });
-        }
-      } else if (info.file.status === 'error') {
-        message.error(`${name} 上传失败。`);
-      }
-    },
-  };
+  const changeSelection = (keys: React.Key[]) => {
+    setSelectedKeys(keys)
+  }
   return (
     <PageContainer>
       <ProTable<TableListItem>
@@ -162,7 +127,9 @@ const TableList: React.FC = () => {
         formRef={searchFormRef}
         rowKey="id"
         search={{
+          span: 4,
           labelWidth: 120,
+          layout: 'vertical',
         }}
         rowSelection={{
           selections: [Table.SELECTION_ALL, Table.SELECTION_INVERT],
@@ -171,15 +138,16 @@ const TableList: React.FC = () => {
               disabled: record.isSend === '1'
             }
           },
+          selectedRowKeys: selectedKeys,
+          onChange: changeSelection
         }}
-        toolBarRender={() => [
-          // <Upload {...props}>
-          //   <Button icon={<UploadOutlined />}>上传消费记录</Button>
-          // </Upload>,
-          // <Button onClick={syncUser} loading={updateLoading}>
-          //   同步用户信息
-          // </Button>,
-        ]}
+        tableAlertOptionRender={() => {
+          return (
+            <Space size={16}>
+              <a onClick={sendMulipleMsg}>发送短信</a>
+            </Space>
+          );
+        }}
         request={(params, sorter, filter) => getTableList({ ...params, sorter, filter })}
         columns={columns}
       />

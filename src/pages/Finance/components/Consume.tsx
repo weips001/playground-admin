@@ -48,7 +48,7 @@ const UserMoadl: React.FC<UserMoadlProps> = (props) => {
       };
       formRef.current?.setFieldsValue(values);
       console.log('restTotal', restTotal);
-      if (restTotal == -1) {
+      if (restTotal == -1 || restTotal == -2) {
         const newConsume = activeConsume.filter((item) => item.value === 1);
         setActiveConsume(newConsume);
       } else {

@@ -1,4 +1,5 @@
 import request from '@/utils/request';
+import React from 'react';
 import type { TableListParams, TableListItem } from './data.d';
 
 export async function getTableList(params?: TableListParams) {
@@ -7,9 +8,12 @@ export async function getTableList(params?: TableListParams) {
   });
 }
 
-export async function remove(id: string) {
-  return request(`/api/vip/${id}`, {
-    method: 'delete',
+export async function sendMsg(ids: React.Key[]) {
+  return request(`/api/sendMsgByIds`, {
+    method: 'POST',
+    data: {
+      ids
+    }
   });
 }
 

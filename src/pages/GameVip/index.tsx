@@ -179,47 +179,58 @@ const TableList: React.FC = () => {
       valueType: 'dateTime',
     },
     {
+      title: '过期日期',
+      dataIndex: 'overdate',
+      hideInSearch: true,
+      sorter: true,
+    },
+    {
       title: '操作',
       dataIndex: 'option',
       valueType: 'option',
-      render: (_, record) => [
-        <a
-          key="recharge"
-          onClick={() => {
-            setRechargeVisible(true);
-            setCurrentRow(record);
-          }}
-        >
-          充值
-        </a>,
-        <a
-          key="consume"
-          onClick={() => {
-            setConsumeVisible(true);
-            setCurrentRow(record);
-          }}
-        >
-          消费
-        </a>,
-        <a
-          key="config"
-          onClick={() => {
-            handleModalVisible(true);
-            setCurrentRow(record);
-            modalRef.current?.setFieldsValue(record);
-          }}
-        >
-          编辑
-        </a>,
-        // <a
-        //   key="subscribeAlert"
-        //   onClick={async () => {
-        //     await confirmDel(record.id);
-        //   }}
-        // >
-        //   删除
-        // </a>,
-      ],
+      render: (_, record) => {
+        if(record.restTotal == 0) {
+          return null
+        }
+        return [
+          <a
+            key="recharge"
+            onClick={() => {
+              setRechargeVisible(true);
+              setCurrentRow(record);
+            }}
+          >
+            充值
+          </a>,
+          <a
+            key="consume"
+            onClick={() => {
+              setConsumeVisible(true);
+              setCurrentRow(record);
+            }}
+          >
+            消费
+          </a>,
+          <a
+            key="config"
+            onClick={() => {
+              handleModalVisible(true);
+              setCurrentRow(record);
+              modalRef.current?.setFieldsValue(record);
+            }}
+          >
+            编辑
+          </a>,
+          // <a
+          //   key="subscribeAlert"
+          //   onClick={async () => {
+          //     await confirmDel(record.id);
+          //   }}
+          // >
+          //   删除
+          // </a>,
+        ]
+      }
     },
   ];
   const cancelRechargeModal = () => {
