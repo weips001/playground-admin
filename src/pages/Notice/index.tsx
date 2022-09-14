@@ -5,7 +5,7 @@ import type { ProColumns, ActionType } from '@ant-design/pro-table';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import ProTable from '@ant-design/pro-table';
 import type { TableListItem } from './data.d';
-import { getTableList, syncUserInfo, sendMsg } from './service';
+import { getTableList, remove, sendMsg } from './service';
 import moment from 'moment';
 
 const { confirm } = Modal;
@@ -15,6 +15,36 @@ const TableList: React.FC = () => {
   const [updateLoading, setLoading] = useState<boolean>(false);
   const [selectedKeys, setSelectedKeys] = useState<React.Key[]>([]);
   const searchFormRef = useRef<FormInstance>();
+
+  const needDel = (record): boolean => {
+    const { total, restTotal, lastUseDate } = record;
+    const diff = new Date().getTime() - new Date(lastUseDate).getTime()
+    const base = 2 * 365 * 24 * 60 * 60 * 1000
+    const delay = diff > base
+    return total == record.restTotal && delay
+  }
+
+  const delay = () => {
+    return new Promise((resolve, reject) => {
+      setTimeout(resolve, 2000)
+    })
+  }
+
+  const delNotice = (id) => {
+    console.log(id)
+    Modal.confirm({
+      title: '删除确认',
+      icon: <ExclamationCircleOutlined />,
+      content: '是否确认删除此条信息？',
+      okText: '确认',
+      cancelText: '取消',
+      async onOk() {
+        await remove(id)
+        actionRef.current?.reload()
+        return 
+      }
+    });
+  }
 
   const columns: ProColumns<TableListItem>[] = [
     {
@@ -102,6 +132,29 @@ const TableList: React.FC = () => {
       hideInSearch: true,
       dataIndex: 'remark',
     },
+    {
+      title: '操作',
+      dataIndex: 'option',
+      valueType: 'option',
+      render: (_, record) => {
+        const { cardType, overdate, lastUseDate } = record;
+        let operate = []
+        if (needDel(record)) {
+          operate = [
+            <a
+              key="recharge"
+              className='text-danger'
+              onClick={() => {
+                delNotice(record._id)
+              }}
+            >
+              删除
+            </a>,
+          ]
+        }
+        return operate
+      }
+    }
   ];
   const sendMulipleMsg = async () => {
     confirm({
@@ -135,7 +188,7 @@ const TableList: React.FC = () => {
           selections: [Table.SELECTION_ALL, Table.SELECTION_INVERT],
           getCheckboxProps(record) {
             return {
-              disabled: record.isSend === '1'
+              disabled: record.isSend === '1' || needDel(record)
             }
           },
           selectedRowKeys: selectedKeys,

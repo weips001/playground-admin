@@ -24,6 +24,12 @@ export async function add(data: TableListItem) {
   });
 }
 
+export async function remove(id: string) {
+  return request(`/api/sendMsg/${id}`, {
+    method: 'delete',
+  });
+}
+
 export async function update(data: TableListParams) {
   return request(`/api/vip/${data.id}`, {
     method: 'PUT',
