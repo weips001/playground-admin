@@ -1,7 +1,7 @@
 import { PlusOutlined } from '@ant-design/icons';
 import { Button, message, Input, Modal, Drawer, Tag, FormInstance } from 'antd';
-import React, { useState, useRef, Fragment } from 'react';
-import { useIntl } from 'umi';
+import React, { useState, useRef, Fragment, useEffect } from 'react';
+import { useModel } from 'umi';
 import { PageContainer, FooterToolbar } from '@ant-design/pro-layout';
 import type { ProColumns, ActionType } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
@@ -80,9 +80,14 @@ const TableList: React.FC = () => {
   const [showDetail, setShowDetail] = useState<boolean>(false);
   const actionRef = useRef<ActionType>();
   const modalRef = useRef<FormInstance>()
+  const searchFormRef = useRef<FormInstance>();
   const [currentRow, setCurrentRow] = useState<TableListItem>();
   const [selectedRowsState, setSelectedRows] = useState<string[]>([]);
-  
+  const {search, changeSearch} = useModel('search', model => ({search: model.search, changeSearch: model.changeSearch}))
+
+  useEffect(() => {
+    searchFormRef.current?.setFieldsValue(search)
+  }, [])
   const handleRemove = async (selectedRows: string[]) => {
     if (!selectedRows) return true;
     try {
@@ -118,7 +123,7 @@ const TableList: React.FC = () => {
 
   const columns: ProColumns<TableListItem>[] = [
     {
-      title: '姓名',
+      title: '姓名111',
       dataIndex: 'name',
       render: (dom, entity) => {
         return (
@@ -185,12 +190,16 @@ const TableList: React.FC = () => {
   const onVisibleChange = (visible: boolean) => {
     handleModalVisible(visible);
   };
+  const onSubmit = (params) => {
+    changeSearch(params)
+  }
   return (
     <PageContainer>
       <ProTable<TableListItem>
         headerTitle="查询表格"
         bordered={true}
         actionRef={actionRef}
+        formRef={searchFormRef}
         rowKey="id"
         search={{
           labelWidth: 120,
@@ -198,6 +207,8 @@ const TableList: React.FC = () => {
         pagination={{
           pageSize: 50
         }}
+        params={search}
+        onSubmit={onSubmit}
         toolBarRender={() => [
           <Button
             type="primary"

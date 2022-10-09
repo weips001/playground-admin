@@ -157,7 +157,6 @@ const TableList: React.FC = () => {
             onClick={() => {
               handleModalVisible(true);
               setCurrentRow(record);
-              modalRef.current?.setFieldsValue(record);
             }}
           >
             编辑
@@ -190,23 +189,8 @@ const TableList: React.FC = () => {
     setConsumeVisible(false);
   };
   const onVisibleChange = async (visible: boolean) => {
-    const phone = searchFormRef.current?.getFieldValue('phone') || '';
-    if (visible && phone.length === 11 && !currentRow) {
-      const { data } = await getUserByPhone(phone);
-      if (data) {
-        const { name, phone, birthday, sex, cardId, remark } = data;
-        const values = {
-          name,
-          phone,
-          birthday,
-          sex,
-          cardId,
-          remark,
-        };
-        modalRef.current?.setFieldsValue(values);
-      } else {
-        modalRef.current?.setFieldsValue({ phone });
-      }
+    if (visible && currentRow != undefined) {
+      modalRef.current?.setFieldsValue(currentRow);
     }
     handleModalVisible(visible);
   };
@@ -217,68 +201,6 @@ const TableList: React.FC = () => {
   const okRechargeModal = () => {
     cancelRechargeModal();
     actionRef.current?.reload();
-  };
-  const props = {
-    name: 'file',
-    showUploadList: false,
-    action: '/api/vipUpload',
-    onChange(info) {
-      const { response, name, status } = info.file;
-      if (status !== 'uploading') {
-        console.log(info.file, info.fileList);
-      }
-      if (status === 'done') {
-        if (response.code === 0) {
-          message.success(`${name} 上传成功。`);
-          if (actionRef.current) {
-            actionRef.current.reload();
-          }
-        } else {
-          const list = response.data.errInfo.map((item) => (
-            <p>
-              第{item.index + 2}行数据上传失败，失败原因：{item.msg}
-            </p>
-          ));
-          Modal.error({
-            title: '上传失败！',
-            content: list,
-          });
-        }
-      } else if (info.file.status === 'error') {
-        message.error(`${name} 上传失败。`);
-      }
-    },
-  };
-  const Userprops = {
-    name: 'file',
-    showUploadList: false,
-    action: '/api/vipUserUpload',
-    onChange(info) {
-      const { response, name, status } = info.file;
-      if (status !== 'uploading') {
-        console.log(info.file, info.fileList);
-      }
-      if (status === 'done') {
-        if (response.code === 0) {
-          message.success(`${name} 上传成功。`);
-          if (actionRef.current) {
-            actionRef.current.reload();
-          }
-        } else {
-          const list = response.data.errInfo.map((item) => (
-            <p>
-              第{item.index + 2}行数据上传失败，失败原因：{item.msg}
-            </p>
-          ));
-          Modal.error({
-            title: '上传失败！',
-            content: list,
-          });
-        }
-      } else if (info.file.status === 'error') {
-        message.error(`${name} 上传失败。`);
-      }
-    },
   };
   return (
     <PageContainer>

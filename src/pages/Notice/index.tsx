@@ -1,4 +1,4 @@
-import { Tag, message, Table, Modal, FormInstance, Space } from 'antd';
+import { Tag, Button, Table, Modal, FormInstance, Space } from 'antd';
 import React, { useRef, useState } from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
 import type { ProColumns, ActionType } from '@ant-design/pro-table';
@@ -21,7 +21,7 @@ const TableList: React.FC = () => {
     const diff = new Date().getTime() - new Date(lastUseDate).getTime()
     const base = 2 * 365 * 24 * 60 * 60 * 1000
     const delay = diff > base
-    return total == record.restTotal && delay
+    return total == record.restTotal || delay
   }
 
   const delay = () => {
@@ -171,6 +171,9 @@ const TableList: React.FC = () => {
   const changeSelection = (keys: React.Key[]) => {
     setSelectedKeys(keys)
   }
+  const multipleDel = () => {
+    
+  }
   return (
     <PageContainer>
       <ProTable<TableListItem>
@@ -184,6 +187,13 @@ const TableList: React.FC = () => {
           labelWidth: 120,
           layout: 'vertical',
         }}
+        // toolbar={{
+        //   actions: [
+        //     <Button key="primary" danger onClick={multipleDel}>
+        //       批量删除
+        //     </Button>
+        //   ]
+        // }}
         rowSelection={{
           selections: [Table.SELECTION_ALL, Table.SELECTION_INVERT],
           getCheckboxProps(record) {

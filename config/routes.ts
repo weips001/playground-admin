@@ -130,6 +130,13 @@
                 // authority: 'consume',
                 component: './Notice',
               },
+              {
+                name: '异常会员',
+                icon: 'table',
+                path: '/falseVip',
+                // authority: 'consume',
+                component: './FalseVip',
+              },
               // {
               //   name: '付款申请单',
               //   icon: 'table',

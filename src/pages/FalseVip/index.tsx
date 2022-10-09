@@ -1,13 +1,14 @@
-import { Tag, FormInstance } from 'antd';
-import React, { useRef,useEffect } from 'react';
+import {  FormInstance, message } from 'antd';
+import React, {  useRef,useEffect } from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
 import type { ProColumns, ActionType } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
-import type { TableListItem } from './data.d';
-import { getTableList } from './service';
 import {useModel} from 'umi'
-import { cardTypeEnum } from '@/utils/constant';
-import moment from 'moment';
+import type { TableListItem } from './data.d';
+import { getTableList, recoveryVip } from './service';
+import {  cardTypeEnum } from '@/utils/constant';
+
+
 
 const TableList: React.FC = () => {
   const actionRef = useRef<ActionType>();
@@ -17,36 +18,53 @@ const TableList: React.FC = () => {
   useEffect(() => {
     searchFormRef.current?.setFieldsValue(search)
   }, [])
-
+  const onSubmit = (params) => {
+    changeSearch(params)
+  }
+  const onReset = () => {
+    changeSearch({})
+  }
+  const backVip = async (id) => {
+    await recoveryVip(id)
+    message.success('恢复成功')
+    actionRef.current?.reload()
+  }
   const columns: ProColumns<TableListItem>[] = [
     {
       title: '姓名',
-      dataIndex: 'name',
-    },
-    {
-      title: '手机号',
-      dataIndex: 'phone',
-      order: 3,
+      dataIndex: 'name'
     },
     {
       title: '卡号',
       dataIndex: 'cardId',
+      order: 1,
+    },
+    {
+      title: '手机号',
+      dataIndex: 'phone',
       order: 2,
     },
     {
-      title: '充值日期',
+      title: '创建日期',
       hideInSearch: true,
       dataIndex: 'createTime',
       valueType: 'dateTime',
     },
     {
-      title: '充值日期',
-      dataIndex: 'createTime',
-      initialValue: moment().format('YYYY-MM-DD'),
+      title: '生日',
+      hideInSearch: true,
       hideInTable: true,
-      sorter: true,
+      dataIndex: 'birthday',
       valueType: 'date',
-      order: 1,
+    },
+    {
+      title: '性别',
+      hideInSearch: true,
+      dataIndex: 'sex',
+      valueEnum: {
+        0: '男',
+        1: '女',
+      },
     },
     {
       title: '卡种',
@@ -62,6 +80,22 @@ const TableList: React.FC = () => {
       title: '总次数',
       hideInSearch: true,
       dataIndex: 'total',
+      render(_, record) {
+        return record.total > 0 ? record.total : '不限次';
+      },
+    },
+    {
+      title: '剩余次数',
+      hideInSearch: true,
+      dataIndex: 'restTotal',
+      render(_, record) {
+        return record.restTotal > 0 ? record.restTotal : '不限次';
+      },
+    },
+    {
+      title: '已用次数',
+      hideInSearch: true,
+      dataIndex: 'usedTotal',
     },
     {
       title: '有效期',
@@ -71,13 +105,22 @@ const TableList: React.FC = () => {
       hideInSearch: true,
       valueType: 'date',
     },
+    {
+      title: '操作',
+      dataIndex: 'option',
+      valueType: 'option',
+      render: (_, record) => {
+        return [
+          <a
+            key="recharge"
+            onClick={() => backVip(record.id)}
+          >
+            恢复
+          </a>]
+      }
+    }
   ];
-  const onSubmit = (params) => {
-    changeSearch(params)
-  }
-  const onReset = () => {
-    changeSearch({})
-  }
+  
   return (
     <PageContainer>
       <ProTable<TableListItem>
@@ -86,12 +129,12 @@ const TableList: React.FC = () => {
         actionRef={actionRef}
         formRef={searchFormRef}
         rowKey="id"
-        params={search}
-        onSubmit={onSubmit}
-        onReset={onReset}
         search={{
           labelWidth: 120,
         }}
+        params={search}
+        onSubmit={onSubmit}
+        onReset={onReset}
         request={(params, sorter, filter) => getTableList({ ...params, sorter, filter })}
         columns={columns}
       />

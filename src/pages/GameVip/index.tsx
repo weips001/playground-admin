@@ -1,6 +1,7 @@
 import { PlusOutlined } from '@ant-design/icons';
 import { Button, message, Modal, Drawer, Tag, FormInstance } from 'antd';
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
+import {useModel} from 'umi'
 import { PageContainer, FooterToolbar } from '@ant-design/pro-layout';
 import type { ProColumns, ActionType } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
@@ -75,6 +76,7 @@ const compStatusList = {
 };
 
 const TableList: React.FC = () => {
+  const {search, changeSearch} = useModel('search', model => ({search: model.search, changeSearch: model.changeSearch}))
   /** 新建窗口的弹窗 */
   const [createModalVisible, handleModalVisible] = useState<boolean>(false);
   /** 分布更新窗口的弹窗 */
@@ -88,6 +90,10 @@ const TableList: React.FC = () => {
   const searchFormRef = useRef<FormInstance>();
   const [currentRow, setCurrentRow] = useState<TableListItem>();
   const [selectedRowsState, setSelectedRows] = useState<string[]>([]);
+
+  useEffect(() => {
+    searchFormRef.current?.setFieldsValue(search)
+  }, [])
 
   const handleRemove = async (id) => {
     try {
@@ -254,37 +260,12 @@ const TableList: React.FC = () => {
     cancelRechargeModal();
     actionRef.current?.reload();
   };
-  const props = {
-    name: 'file',
-    showUploadList: false,
-    action: '/api/gameBi/uploadFile',
-    onChange(info) {
-      const { response, name, status } = info.file;
-      if (status !== 'uploading') {
-        console.log(info.file, info.fileList);
-      }
-      if (status === 'done') {
-        if (response.code === 0) {
-          message.success(`${name} 上传成功。`);
-          if (actionRef.current) {
-            actionRef.current.reload();
-          }
-        } else {
-          const list = response.data.errInfo.map((item) => (
-            <p>
-              第{item.index + 2}行数据上传失败，失败原因：{item.msg}
-            </p>
-          ));
-          Modal.error({
-            title: '上传失败！',
-            content: list,
-          });
-        }
-      } else if (info.file.status === 'error') {
-        message.error(`${name} 上传失败。`);
-      }
-    },
-  };
+  const onSubmit = (params) => {
+    changeSearch(params)
+  }
+  const onReset = () => {
+    changeSearch({})
+  }
   return (
     <PageContainer>
       <ProTable<TableListItem>
@@ -296,6 +277,9 @@ const TableList: React.FC = () => {
         search={{
           labelWidth: 120,
         }}
+        params={search}
+        onSubmit={onSubmit}
+        onReset={onReset}
         toolBarRender={() => [
           // <Upload {...props}>
           //   <Button icon={<UploadOutlined />}>上传游戏币记录</Button>

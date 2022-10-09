@@ -1,9 +1,10 @@
-import { Button, message, Upload, Modal, FormInstance } from 'antd';
-import React, { useRef, useState } from 'react';
+import { Button, message, Upload, Modal,  FormInstance } from 'antd';
+import React, { useRef, useState ,useEffect} from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
 import type { ProColumns, ActionType } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
 import type { TableListItem } from './data.d';
+import {useModel} from 'umi'
 import { getTableList, syncUserInfo } from './service';
 import { UploadOutlined } from '@ant-design/icons';
 import moment from 'moment';
@@ -12,7 +13,11 @@ const TableList: React.FC = () => {
   const actionRef = useRef<ActionType>();
   const [updateLoading, setLoading] = useState<boolean>(false);
   const searchFormRef = useRef<FormInstance>();
+  const {search, changeSearch} = useModel('search', model => ({search: model.search, changeSearch: model.changeSearch}))
 
+  useEffect(() => {
+    searchFormRef.current?.setFieldsValue(search)
+  }, [])
   const columns: ProColumns<TableListItem>[] = [
     {
       title: '姓名',
@@ -59,68 +64,12 @@ const TableList: React.FC = () => {
     await syncUserInfo();
     setLoading(false);
   };
-  const props = {
-    name: 'file',
-    showUploadList: false,
-    action: '/api/uploadConsumeRecord',
-    onChange(info) {
-      const { response, name, status } = info.file;
-      if (status !== 'uploading') {
-        console.log(info.file, info.fileList);
-      }
-      if (status === 'done') {
-        if (response.code === 0) {
-          message.success(`${name} 上传成功。`);
-          if (actionRef.current) {
-            actionRef.current.reload();
-          }
-        } else {
-          const list = response.data.errInfo.map((item) => (
-            <p>
-              第{item.index + 2}行数据上传失败，失败原因：{item.msg}
-            </p>
-          ));
-          Modal.error({
-            title: '上传失败！',
-            content: list,
-          });
-        }
-      } else if (info.file.status === 'error') {
-        message.error(`${name} 上传失败。`);
-      }
-    },
-  };
-  const Userprops = {
-    name: 'file',
-    showUploadList: false,
-    action: '/api/vipUserUpload',
-    onChange(info) {
-      const { response, name, status } = info.file;
-      if (status !== 'uploading') {
-        console.log(info.file, info.fileList);
-      }
-      if (status === 'done') {
-        if (response.code === 0) {
-          message.success(`${name} 上传成功。`);
-          if (actionRef.current) {
-            actionRef.current.reload();
-          }
-        } else {
-          const list = response.data.errInfo.map((item) => (
-            <p>
-              第{item.index + 2}行数据上传失败，失败原因：{item.msg}
-            </p>
-          ));
-          Modal.error({
-            title: '上传失败！',
-            content: list,
-          });
-        }
-      } else if (info.file.status === 'error') {
-        message.error(`${name} 上传失败。`);
-      }
-    },
-  };
+  const onSubmit = (params) => {
+    changeSearch(params)
+  }
+  const onReset = () => {
+    changeSearch({})
+  }
   return (
     <PageContainer>
       <ProTable<TableListItem>
@@ -132,6 +81,9 @@ const TableList: React.FC = () => {
         search={{
           labelWidth: 120,
         }}
+        onSubmit={onSubmit}
+        onReset={onReset}
+        params={search}
         toolBarRender={() => [
           // <Upload {...props}>
           //   <Button icon={<UploadOutlined />}>上传消费记录</Button>

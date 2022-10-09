@@ -1,16 +1,27 @@
 import { FormInstance } from 'antd';
-import React, { useRef } from 'react';
+import React, { useRef, useEffect } from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
 import type { ProColumns, ActionType } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
 import type { TableListItem } from './data.d';
 import { getTableList } from './service';
+import {useModel} from 'umi'
 import moment from 'moment';
 
 const TableList: React.FC = () => {
   const actionRef = useRef<ActionType>();
   const searchFormRef = useRef<FormInstance>();
+  const {search, changeSearch} = useModel('search', model => ({search: model.search, changeSearch: model.changeSearch}))
 
+  useEffect(() => {
+    searchFormRef.current?.setFieldsValue(search)
+  }, [])
+  const onSubmit = (params) => {
+    changeSearch(params)
+  }
+  const onReset = () => {
+    changeSearch({})
+  }
   const columns: ProColumns<TableListItem>[] = [
     {
       title: '姓名',
@@ -53,6 +64,9 @@ const TableList: React.FC = () => {
         search={{
           labelWidth: 120,
         }}
+        onSubmit={onSubmit}
+        onReset={onReset}
+        params={search}
         request={(params, sorter, filter) => getTableList({ ...params, sorter, filter })}
         columns={columns}
       />
