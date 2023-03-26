@@ -234,7 +234,9 @@ const TableList: React.FC = () => {
             onClick={() => {
               handleModalVisible(true);
               setCurrentRow(record);
-              modalRef.current?.setFieldsValue(record);
+              setTimeout(() => {
+                modalRef.current?.setFieldsValue(record);
+              }, 300);
             }}
           >
             编辑
@@ -387,6 +389,7 @@ const TableList: React.FC = () => {
             modalRef.current?.resetFields();
           },
         }}
+        
         initialValues={{
           cardId: moment().format('YYYYMMDDhhmmss'),
           createTime: new Date(),
