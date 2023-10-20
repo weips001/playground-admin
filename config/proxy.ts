@@ -8,7 +8,8 @@
 export default {
   dev: {
     '/api': {
-      target: 'http://39.103.157.69:7006',
+      // target: 'http://39.103.157.69:7006',
+      target: 'http://www.cwerp.top',
       // target: 'http://127.0.0.1:7006',
       changeOrigin: true,
       pathRewrite: { '^': '' },

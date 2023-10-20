@@ -205,6 +205,14 @@ const TableList: React.FC = () => {
       valueType: 'date',
     },
     {
+      title: '最近消费日期',
+      dataIndex: 'lastUseTime',
+      hideInForm: true,
+      sorter: true,
+      // hideInSearch: true,
+      valueType: 'date',
+    },
+    {
       title: '操作',
       dataIndex: 'option',
       valueType: 'option',
