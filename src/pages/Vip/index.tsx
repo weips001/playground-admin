@@ -18,7 +18,7 @@ import type { ProDescriptionsItemProps } from '@ant-design/pro-descriptions';
 import ProDescriptions from '@ant-design/pro-descriptions';
 import type { FormValueType } from './components/UpdateForm';
 import type { TableListItem } from './data.d';
-import { getTableList, update, add, remove, getUserByPhone } from './service';
+import { getTableList, update, add, remove, getUserByPhone, sendMessage } from './service';
 import { ExclamationCircleOutlined, UploadOutlined } from '@ant-design/icons';
 import { sexType, rechargeType, cardTypeEnum } from '@/utils/constant';
 import Recharge from './components/Recharge';
@@ -79,6 +79,7 @@ const TableList: React.FC = () => {
   const searchFormRef = useRef<FormInstance>();
   const [currentRow, setCurrentRow] = useState<TableListItem>();
   const [selectedRowsState, setSelectedRows] = useState<string[]>([]);
+  const [dataSource, setDataSource] = useState<any[]>([]);
 
   useEffect(() => {
     searchFormRef.current?.setFieldsValue(search)
@@ -96,21 +97,38 @@ const TableList: React.FC = () => {
     }
   };
 
+  const getTableDataList = async (params, sorter, filter) => {
+    const res = await getTableList({ ...params, sorter, filter })
+    setDataSource(res.data)
+    return res
+  }
+
   /**
    * 删除节点
    *
    * @param selectedRows
    */
-  const confirmDel = (id: string) => {
+  const sendMessageByIds = () => {
     confirm({
-      title: '是否确认删除',
+      title: '是否确认发送',
       icon: <ExclamationCircleOutlined />,
-      content: '您正在删除当前数据，是否继续？',
+      content: `即将给${selectedRowsState.length}位顾客发送短信通知`,
       okText: '确定',
-      okType: 'danger',
+      okType: 'primary',
       cancelText: '取消',
       onOk() {
-        return handleRemove(id);
+        const idMap = {}
+        selectedRowsState.forEach(id => {
+          idMap[id] = true
+        })
+        const ids = new Set<string>()
+        dataSource.forEach(item => {
+          const {id, phone} = item
+          if(idMap[id]) {
+            ids.add(phone)
+          }
+        })
+        return sendMessage([...ids])
       },
       onCancel() {},
     });
@@ -334,6 +352,16 @@ const TableList: React.FC = () => {
           // </Upload>,
           <Button
             type="primary"
+            key="send"
+            disabled={!selectedRowsState.length}
+            onClick={() => {
+              sendMessageByIds()
+            }}
+          >
+             发送短信
+          </Button>,
+          <Button
+            type="primary"
             key="primary"
             onClick={() => {
               setCurrentRow(undefined);
@@ -348,9 +376,20 @@ const TableList: React.FC = () => {
             <PlusOutlined /> 新增
           </Button>,
         ]}
-        request={(params, sorter, filter) => getTableList({ ...params, sorter, filter })}
+        request={(params, sorter, filter) => getTableDataList(params, sorter, filter)}
         columns={columns}
         rowSelection={{
+          getCheckboxProps(record) {
+            let disabled = false
+            if (record.overdate) {
+              const before = new Date(record.overdate).getTime()
+              const now = new Date().getTime()
+              disabled = before < now
+            }
+            return {              
+              disabled
+            }
+          },
           onChange: (_, selectedRows) => {
             const ids = selectedRows.map((item) => item.id);
             setSelectedRows(ids);
@@ -397,7 +436,7 @@ const TableList: React.FC = () => {
             modalRef.current?.resetFields();
           },
         }}
-        
+
         initialValues={{
           cardId: moment().format('YYYYMMDDhhmmss'),
           createTime: new Date(),
@@ -483,7 +522,7 @@ const TableList: React.FC = () => {
           />
         </ProForm.Group>
         <ProForm.Group>
-          
+
         </ProForm.Group>
         <ProForm.Group>
           <ProFormTextArea name="remark" label="备注" width="xl" placeholder="请输入备注" />

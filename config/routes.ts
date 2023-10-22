@@ -126,6 +126,13 @@
               {
                 name: '短信通知',
                 icon: 'table',
+                path: '/messageRecord',
+                // authority: 'consume',
+                component: './MessageRecord',
+              },
+              {
+                name: '短信通知(老会员)',
+                icon: 'table',
                 path: '/notice',
                 // authority: 'consume',
                 component: './Notice',

@@ -1,15 +1,19 @@
 import request from '@/utils/request';
+import React from 'react';
 import type { TableListParams, TableListItem } from './data.d';
 
 export async function getTableList(params?: TableListParams) {
-  return request('/api/vip', {
+  return request('/api/sendRecords', {
     params,
   });
 }
 
-export async function remove(id: string) {
-  return request(`/api/vip/${id}`, {
-    method: 'delete',
+export async function sendMsg(ids: React.Key[]) {
+  return request(`/api/sendMsgByIds`, {
+    method: 'POST',
+    data: {
+      ids
+    }
   });
 }
 
@@ -20,6 +24,12 @@ export async function add(data: TableListItem) {
   });
 }
 
+export async function remove(id: string) {
+  return request(`/api/sendMsg/${id}`, {
+    method: 'delete',
+  });
+}
+
 export async function update(data: TableListParams) {
   return request(`/api/vip/${data.id}`, {
     method: 'PUT',
@@ -27,19 +37,8 @@ export async function update(data: TableListParams) {
   });
 }
 
-export async function getUserByPhone(phone: string) {
-  return request('/api/getUserByPhone', {
-    params: {
-      phone
-    },
-  });
-}
-
-export async function sendMessage(ids: string[]) {
-  return request('/api/sendMsgByPhones', {
-    method: 'post',
-    data: {
-      ids
-    },
+export async function syncUserInfo() {
+  return request(`/api/syncUserInfo`, {
+    method: 'GET',
   });
 }
