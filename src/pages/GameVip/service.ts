@@ -33,3 +33,12 @@ export async function update(data: TableListParams) {
     data,
   });
 }
+
+export async function sendMessage(ids: string[]) {
+  return request('/api/sendMsgByPhones', {
+    method: 'post',
+    data: {
+      ids
+    },
+  });
+}

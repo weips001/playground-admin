@@ -15,7 +15,7 @@ import ProForm, {
 import type { ProDescriptionsItemProps } from '@ant-design/pro-descriptions';
 import ProDescriptions from '@ant-design/pro-descriptions';
 import type { TableListItem } from './data.d';
-import { getTableList, update, add, remove } from './service';
+import { getTableList, update, add, remove, sendMessage } from './service';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { gameBiType } from '@/utils/constant';
 import Recharge from './components/Recharge';
@@ -90,6 +90,7 @@ const TableList: React.FC = () => {
   const searchFormRef = useRef<FormInstance>();
   const [currentRow, setCurrentRow] = useState<TableListItem>();
   const [selectedRowsState, setSelectedRows] = useState<string[]>([]);
+  const [dataSource, setDataSource] = useState<any[]>([]);
 
   useEffect(() => {
     searchFormRef.current?.setFieldsValue(search)
@@ -112,20 +113,37 @@ const TableList: React.FC = () => {
    *
    * @param selectedRows
    */
-  const confirmDel = (id: string) => {
+  const sendMessageByIds = () => {
     confirm({
-      title: '是否确认删除',
+      title: '是否确认发送',
       icon: <ExclamationCircleOutlined />,
-      content: '您正在删除当前数据，是否继续？',
+      content: `即将给${selectedRowsState.length}位顾客发送短信通知`,
       okText: '确定',
-      okType: 'danger',
+      okType: 'primary',
       cancelText: '取消',
       onOk() {
-        return handleRemove(id);
+        const idMap = {}
+        selectedRowsState.forEach(id => {
+          idMap[id] = true
+        })
+        const ids = new Set<string>()
+        dataSource.forEach(item => {
+          const {id, phone} = item
+          if(idMap[id]) {
+            ids.add(phone)
+          }
+        })
+        return sendMessage([...ids])
       },
       onCancel() {},
     });
   };
+
+  const requestTableList = async (params, sorter, filter) => {
+    const res = await getTableList({ ...params, sorter, filter })
+    setDataSource(res.data)
+    return res
+  }
 
   const columns: ProColumns<TableListItem>[] = [
     {
@@ -189,6 +207,13 @@ const TableList: React.FC = () => {
       dataIndex: 'overdate',
       hideInSearch: true,
       sorter: true,
+    },
+    {
+      title: '最近消费日期',
+      dataIndex: 'lastUseTime',
+      hideInSearch: true,
+      sorter: true,
+      valueType: 'dateTime',
     },
     {
       title: '操作',
@@ -287,6 +312,16 @@ const TableList: React.FC = () => {
           <Button
             type="primary"
             key="primary"
+            disabled={!selectedRowsState.length}
+            onClick={() => {
+              sendMessageByIds()
+            }}
+          >
+            发送短信
+          </Button>,
+          <Button
+            type="primary"
+            key="primary"
             onClick={() => {
               setCurrentRow(undefined);
               handleModalVisible(true);
@@ -295,9 +330,19 @@ const TableList: React.FC = () => {
             <PlusOutlined /> 新增
           </Button>,
         ]}
-        request={(params, sorter, filter) => getTableList({ ...params, sorter, filter })}
+        request={(params, sorter, filter) => requestTableList(params, sorter, filter)}
         columns={columns}
         rowSelection={{
+          getCheckboxProps(record) {
+            let disabled = false
+            if (record.restTotal === 0) {
+              disabled = true
+            }
+            
+            return {              
+              disabled
+            }
+          },
           onChange: (_, selectedRows) => {
             const ids = selectedRows.map((item) => item.id);
             setSelectedRows(ids);

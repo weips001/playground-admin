@@ -381,11 +381,14 @@ const TableList: React.FC = () => {
         rowSelection={{
           getCheckboxProps(record) {
             let disabled = false
-            if (record.overdate) {
-              const before = new Date(record.overdate).getTime()
-              const now = new Date().getTime()
-              disabled = before < now
+            if (record.cardType === '1') {
+              if (record.overdate) {
+                const before = new Date(record.overdate).getTime()
+                const now = new Date().getTime()
+                disabled = before < now
+              }
             }
+            
             return {              
               disabled
             }
